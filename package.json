@@ -1,5 +1,5 @@
 {
-  "name": "yy-lambda-backend-template",
+  "name": "yy-zodiac-lambda",
   "version": "0.0.1",
   "author": "Yue Chang",
   "main": "index.js",
@@ -10,22 +10,24 @@
     "fix:format": "npm run lint:format -- --write",
     "lint": "run-p lint:*",
     "fix": "run-s fix:*",
-    "build": "webpack --config webpack.config.js --display errors-only",
+    "clean": "del-cli dist -f",
+    "build": "webpack --config webpack.config.js",
     "test": "jest -c jest.config.js",
     "test:coverage": "npm run test -- --coverage --verbose",
     "test:lambda": "npm run build:lambda && sam local invoke -t aws/cloudformation/template.yaml -e test/event.json LambdaHelpMe",
     "serverless:package": "aws cloudformation package --template-file aws/cloudformation/template.yaml --output-template-file packaged.yaml --s3-bucket y-cf-midway",
-    "serverless:dev": "aws cloudformation deploy --template-file packaged.yaml --stack-name y-help-me-stack-dev --parameter-overrides ENVR=dev",
-    "serverless:prod": "aws cloudformation deploy --template-file packaged.yaml --stack-name y-help-me-stack-prod --parameter-overrides ENVR=prod",
-    "deploy:dev": "npm run build && npm run serverless:package && npm run serverless:dev",
+    "serverless:dev": "aws cloudformation deploy --template-file packaged.yaml --stack-name yy-zodiac-lambda-stack-dev --parameter-overrides TargetEnvr=dev",
+    "serverless:prod": "aws cloudformation deploy --template-file packaged.yaml --stack-name y-help-me-stack-prod --parameter-overrides TargetEnvr=prod",
+    "deploy:dev": "run-s clean build serverless:package serverless:dev",
     "deploy:prod": "npm run build && npm run serverless:package && npm run serverless:prod"
   },
   "dependencies": {
-    "@types/node": "^14.14.9",
     "inversify": "^5.0.1",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
+    "@types/node": "^14.14.12",
+    "del-cli": "^3.0.1",
     "eslint": "^7.13.0",
     "eslint-config-prettier": "^6.9.0",
     "express": "^4.17.1",
@@ -41,8 +43,8 @@
     "tslint-eslint-rules-recommended": "^1.2.2",
     "tslint-microsoft-contrib": "^6.2.0",
     "typescript": "^4.1.2",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10",
+    "webpack": "^5.10.0",
+    "webpack-cli": "^4.2.0",
     "zip-webpack-plugin": "^3.0.0"
   }
 }

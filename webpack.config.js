@@ -6,7 +6,7 @@ const ZipWebpackPlugin = require('zip-webpack-plugin');
 
 module.exports = {
   devtool: 'source-map',
-  entry: './src/lambda/index.ts',
+  entry: { index: './src/lambda/index.ts' },
   mode: 'production',
   module: {
     rules: [
@@ -26,7 +26,6 @@ module.exports = {
   optimization: {
     minimizer: [
       new TerserPlugin({
-        sourceMap: true,
         terserOptions: {
           // keeping class and function names intact enables more precise logging
           keep_classnames: true,
@@ -34,11 +33,13 @@ module.exports = {
         },
       }),
     ],
+    splitChunks: { chunks: 'all' }
   },
   output: {
-    filename: 'index.js',
+    filename: '[name].js',
     libraryTarget: 'commonjs2',
     path: path.resolve(__dirname, 'dist/webpack/lambda'),
+    chunkFilename: '[name].[chunkhash].js',
   },
   plugins: [
     new ZipWebpackPlugin({
