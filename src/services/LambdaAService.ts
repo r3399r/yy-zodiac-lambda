@@ -5,6 +5,6 @@ import { injectable } from 'inversify';
 @injectable()
 export class LambdaAService {
   public getText(text: string): string {
-    return text
+    return text;
   }
 }

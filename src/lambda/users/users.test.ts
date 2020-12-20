@@ -4,9 +4,9 @@ import { LambdaAEvent } from 'src/lambda/lambdaA/lambdaAEvent';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { LambdaAService } from 'src/services/LambdaAService';
 /**
- * Tests of the lambda A function.
+ * Tests of the users function.
  */
-describe('lambdaA', (): void => {
+describe('users', (): void => {
   let event: LambdaAEvent;
   let lambdaContext: LambdaContext | undefined;
   let mockLambdaAService: any;

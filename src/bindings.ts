@@ -1,6 +1,6 @@
 import { Container } from 'inversify';
 import 'reflect-metadata';
-import { LambdaAService } from './logic/LambdaAService';
+import { LambdaAService } from './services/LambdaAService';
 
 const container: Container = new Container();
 
