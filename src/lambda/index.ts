@@ -5,4 +5,4 @@
  * 'export-name' rule is disabled for this module.
  */
 // tslint:disable: export-name
-export { lambdaA } from 'src/lambda/lambdaA/lambdaA';
+export { users } from 'src/lambda/users/users';

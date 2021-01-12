@@ -25,6 +25,7 @@
     "deploy:prod": "run-s clean build serverless:package serverless:prod"
   },
   "dependencies": {
+    "aws-sdk": "^2.817.0",
     "inversify": "^5.0.1",
     "reflect-metadata": "^0.1.13"
   },

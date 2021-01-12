@@ -1,4 +1,4 @@
 export interface UsersEvent {
-  text: string;
-  digit: number;
+  httpMethod: string;
+  queryStringParameters: { userId: string };
 }

@@ -1,36 +1,37 @@
 import { bindings } from 'src/bindings';
-import { lambdaA } from 'src/lambda/lambdaA/lambdaA';
-import { LambdaAEvent } from 'src/lambda/lambdaA/lambdaAEvent';
 import { LambdaContext } from 'src/lambda/LambdaContext';
-import { LambdaAService } from 'src/services/LambdaAService';
+import { users } from 'src/lambda/users/users';
+import { UsersEvent } from 'src/lambda/users/usersEvent';
+import { UserService } from 'src/services/UserService';
 /**
  * Tests of the users function.
  */
 describe('users', (): void => {
-  let event: LambdaAEvent;
+  let event: UsersEvent;
   let lambdaContext: LambdaContext | undefined;
-  let mockLambdaAService: any;
+  let mockUserService: any;
 
   beforeEach((): void => {
     lambdaContext = { awsRequestId: '456' };
 
-    // prepare mock mockLambdaAService
-    mockLambdaAService = {};
-    bindings
-      .rebind<LambdaAService>(LambdaAService)
-      .toConstantValue(mockLambdaAService);
+    // prepare mock mockUserService
+    mockUserService = {};
+    bindings.rebind<UserService>(UserService).toConstantValue(mockUserService);
 
-    const mockGetText: jest.Mock = jest.fn((input: string): string => input);
+    const mockGetUser: jest.Mock = jest.fn((input: number): number => input);
 
-    mockLambdaAService.getText = mockGetText;
+    mockUserService.getUser = mockGetUser;
   });
 
   it('function should work', async (): Promise<void> => {
     event = {
-      text: 'test',
-      digit: 3,
+      httpMethod: 'GET',
+      queryStringParameters: { userId: 'abc' },
     };
-    await expect(lambdaA(event, lambdaContext)).resolves.toBe('test');
-    expect(mockLambdaAService.getText).toBeCalledTimes(1);
+    await expect(users(event, lambdaContext)).resolves.toStrictEqual({
+      statusCode: 200,
+      body: JSON.stringify('abc'),
+    });
+    expect(mockUserService.getUser).toBeCalledTimes(1);
   });
 });

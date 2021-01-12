@@ -36,7 +36,7 @@ Resources:
               "title": !Sub "${TargetEnvr}-yy-zodiac-api"
             },
             "paths": {
-              "/abc": {
+              "/users": {
                 "post": {
                   "produces": [
                     "application/json"
@@ -55,7 +55,7 @@ Resources:
                     }
                   },
                   "x-amazon-apigateway-integration": {
-                    "uri": !Sub "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:278497686406:function:${TargetEnvr}-lambdaA/invocations",
+                    "uri": !Sub "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:278497686406:function:${TargetEnvr}-users/invocations",
                     "responses": {
                       "default": {
                         "statusCode": "200",
@@ -101,8 +101,8 @@ Resources:
                       "default": {
                         "statusCode": "200",
                         "responseParameters": {
-                          "method.response.header.Access-Control-Allow-Methods": "'GET,OPTIONS'",
-                          "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                          "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+                          "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
                           "method.response.header.Access-Control-Allow-Origin": "'*'"
                         }
                       }
@@ -123,20 +123,23 @@ Resources:
               }
             }
           }
-    LambdaA:
+    LambdaUsers:
       Type: AWS::Serverless::Function
       Properties:
-        Handler: index.lambdaA
+        Handler: index.users
         Runtime: !Sub ${NodeJsVer}
-        FunctionName: !Sub ${TargetEnvr}-lambdaA
+        FunctionName: !Sub ${TargetEnvr}-users
         Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${LambdaExecutionRole}"
         CodeUri: ../../dist/webpack/lambda
         MemorySize: 128
-    InvokePermissionLambdaUsers:
+        Environment:
+          Variables:
+            ENVR: !Sub ${TargetEnvr}
+    InvokePermissionUsers:
       Type: AWS::Lambda::Permission
-      DependsOn: [ServerlessApi, LambdaA]
+      DependsOn: [ServerlessApi, LambdaUsers]
       Properties:
-          FunctionName: !Sub ${TargetEnvr}-lambdaA
+          FunctionName: !Sub ${TargetEnvr}-users
           Action: lambda:InvokeFunction
           Principal: apigateway.amazonaws.com
           SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
