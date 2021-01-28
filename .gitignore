@@ -10,5 +10,4 @@ tmp
 coverage
 
 # cloudfront
-cf-packaged.yaml
 packaged.yaml
