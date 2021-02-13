@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: "AWS::Serverless-2016-10-31"
 Description: >
-    yy-zodiac-lambda RestAPIs, API Gateway, Permissions
+    celestial-service RestAPIs, API Gateway, Permissions
     
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -10,7 +10,7 @@ Globals:
 Parameters:
   LambdaExecutionRole:
     Type: String
-    Default: yy-zodiac-lambda-execution-role
+    Default: celestial-service-execution-role
     Description: The primary role in that gives the Lambda function permission to do its work.
   NodeJsVer:
     Type: String
@@ -33,7 +33,7 @@ Resources:
             "swagger": "2.0",
             "info": {
               "version": "2020-12-12T03:14:11Z",
-              "title": !Sub "${TargetEnvr}-yy-zodiac-api"
+              "title": !Sub "${TargetEnvr}-celestial-service-api"
             },
             "paths": {
               "/users": {

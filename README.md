@@ -1,1 +1,1 @@
-# yy-lambda-backend-template
+# celestial service
