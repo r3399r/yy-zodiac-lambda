@@ -17,8 +17,8 @@
     "test:lambda": "npm run build:lambda && sam local invoke -t aws/cloudformation/template.yaml -e test/event.json LambdaHelpMe",
     "pre:commit": "run-s lint test",
     "serverless:package": "aws cloudformation package --template-file aws/cloudformation/template.yaml --output-template-file packaged.yaml --s3-bucket y-cf-midway",
-    "serverless:dev": "aws cloudformation deploy --template-file packaged.yaml --stack-name celestial-stack-dev --parameter-overrides TargetEnvr=dev",
-    "serverless:prod": "aws cloudformation deploy --template-file packaged.yaml --stack-name celestial-stack-prod --parameter-overrides TargetEnvr=prod",
+    "serverless:dev": "aws cloudformation deploy --template-file packaged.yaml --stack-name celestial-service-dev-stack --parameter-overrides TargetEnvr=dev",
+    "serverless:prod": "aws cloudformation deploy --template-file packaged.yaml --stack-name celestial-service-prod-stack --parameter-overrides TargetEnvr=prod",
     "deploy:dev": "run-s clean build serverless:package serverless:dev",
     "deploy:prod": "run-s clean build serverless:package serverless:prod"
   },
