@@ -1,6 +1,6 @@
 import { PutItemOutput } from 'aws-sdk/clients/dynamodb';
 import { inject, injectable } from 'inversify';
-import { DbKey, Project } from 'src/model/DbKey';
+import { DbKey, SadalsuudEntity } from 'src/model/DbKey';
 import { DbTrip, Trip } from 'src/model/Trip';
 import { DbService } from './DbService';
 
@@ -12,36 +12,25 @@ export class TripService {
   @inject(DbService)
   private readonly dbService!: DbService;
 
-  public async getTrips(): Promise<Trip[]> {
-    const res: DbTrip = await this.dbService.getItem<DbKey, DbTrip>(
-      { userId: 'system', project: Project.SADALSUUD },
-      'trips'
-    );
-
-    return res.trips === undefined ? [] : res.trips;
+  public async getTrips(): Promise<DbTrip[]> {
+    return await this.dbService.query<DbTrip>({
+      key: 'projectEntity',
+      value: SadalsuudEntity.trip,
+    });
   }
 
-  public async getTrip(id: string): Promise<Trip | null> {
-    const trips: Trip[] = await this.getTrips();
-    let target: Trip | null = null;
-    trips.forEach((trip: Trip): void => {
-      if (id === trip.id) {
-        target = trip;
-      }
+  public async getTrip(creationId: string): Promise<DbTrip> {
+    return await this.dbService.getItem<DbKey, DbTrip>({
+      projectEntity: SadalsuudEntity.trip,
+      creationId,
     });
-
-    return target;
   }
 
   public async addTrip(trip: Trip): Promise<PutItemOutput> {
-    const existentTrips: Trip[] = await this.getTrips();
-
-    existentTrips.push(trip);
-
     return await this.dbService.putItem<DbTrip>({
-      userId: 'system',
-      project: Project.SADALSUUD,
-      trips: existentTrips,
+      projectEntity: SadalsuudEntity.trip,
+      creationId: Date.now().toString(16),
+      ...trip,
     });
   }
 }

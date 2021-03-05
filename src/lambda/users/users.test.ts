@@ -26,10 +26,14 @@ describe('users', (): void => {
   it('function should work', async (): Promise<void> => {
     event = {
       httpMethod: 'GET',
+      body: null,
       queryStringParameters: { userId: 'abc' },
     };
     await expect(users(event, lambdaContext)).resolves.toStrictEqual({
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
       body: JSON.stringify('abc'),
     });
     expect(mockUserService.getUser).toBeCalledTimes(1);

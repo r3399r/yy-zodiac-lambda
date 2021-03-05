@@ -1,8 +1,10 @@
-export enum Project {
-  SADALSUUD = 'Sadalsuud',
+export enum SadalsuudEntity {
+  trip = 'sadalsuud-trip',
+  application = 'sadalsuud-application',
+  target = 'sadalsuud-target',
 }
 
 export interface DbKey {
-  userId: string;
-  project: Project;
+  projectEntity: SadalsuudEntity;
+  creationId: string;
 }

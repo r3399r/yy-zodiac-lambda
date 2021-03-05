@@ -1,15 +1,8 @@
 import { DbKey } from 'src/model/DbKey';
 
-export enum NeedFamilyAccompany {
-  YES = 'yes',
-  NO = 'no',
-  BOTH = 'both',
-}
-
 export interface Trip {
-  id: string;
-  type: string;
-  status: string;
+  type: string; // official
+  status: string; // review status
 
   startDate: Date | string; // ISO string
   endDate: Date | string; // ISO string
@@ -18,13 +11,12 @@ export interface Trip {
   fee: number;
   thingsToBring?: string;
   participants: string[];
-  needFamilyAccompany: NeedFamilyAccompany;
+  needFamilyAccompany: string; // yes, no, other
   quota: number;
-
   shortDesc: string;
   detailedDesc: string;
+
+  expiredDate: Date | string; // ISO string
 }
 
-export interface DbTrip extends DbKey {
-  trips: Trip[];
-}
+export type DbTrip = Trip & DbKey;
