@@ -4,7 +4,11 @@ export enum SadalsuudEntity {
   target = 'sadalsuud-target',
 }
 
+export enum LineEntity {
+  user = 'line-user',
+}
+
 export interface DbKey {
-  projectEntity: SadalsuudEntity;
+  projectEntity: SadalsuudEntity | LineEntity;
   creationId: string;
 }

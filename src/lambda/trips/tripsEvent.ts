@@ -1,5 +1,5 @@
 export interface TripsEvent {
   httpMethod: string;
-  body: string;
-  pathParameters: { tripId: string };
+  body: string | null;
+  pathParameters: { id: string };
 }

@@ -16,14 +16,17 @@ export async function trips(
   switch (event.httpMethod) {
     case 'GET':
       if (event.pathParameters !== null) {
-        res = await tripService.getTrip(event.pathParameters.tripId);
+        res = await tripService.getTrip(event.pathParameters.id);
       } else {
         res = await tripService.getTrips();
       }
       break;
     case 'POST':
-      const inputTrip: Trip = JSON.parse(event.body);
-      res = await tripService.addTrip(inputTrip);
+      if (event.body === null) {
+        throw new Error('null body');
+      }
+      const trip: Trip = JSON.parse(event.body);
+      res = await tripService.addTrip(trip);
       break;
     case 'PUT':
       console.log('put');

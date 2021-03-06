@@ -10,6 +10,7 @@ import {
   QueryOutput,
 } from 'aws-sdk/clients/dynamodb';
 import { inject, injectable } from 'inversify';
+import { DbKey } from 'src/model/DbKey';
 
 interface KeyValue {
   key: string;
@@ -34,10 +35,10 @@ export class DbService {
     return await this.dynamoDb.putItem(params).promise();
   }
 
-  public async getItem<T1, T2>(
-    key: T1,
+  public async getItem<T>(
+    key: DbKey,
     projectionExpression?: string
-  ): Promise<T2> {
+  ): Promise<T> {
     const params: GetItemInput = {
       TableName: this.tableName,
       Key: Converter.marshall(key),
@@ -45,7 +46,7 @@ export class DbService {
     };
     const res: GetItemOutput = await this.dynamoDb.getItem(params).promise();
 
-    return <T2>(res.Item === undefined ? {} : Converter.unmarshall(res.Item));
+    return <T>(res.Item === undefined ? {} : Converter.unmarshall(res.Item));
   }
 
   public async query<T>(

@@ -27,7 +27,7 @@ describe('users', (): void => {
     event = {
       httpMethod: 'GET',
       body: null,
-      queryStringParameters: { userId: 'abc' },
+      pathParameters: { id: 'abc' },
     };
     await expect(users(event, lambdaContext)).resolves.toStrictEqual({
       statusCode: 200,

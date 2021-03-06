@@ -1,7 +1,7 @@
-import { PutItemOutput } from 'aws-sdk/clients/dynamodb';
 import { inject, injectable } from 'inversify';
-import { DbKey, SadalsuudEntity } from 'src/model/DbKey';
+import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbTrip, Trip } from 'src/model/Trip';
+import { generateId } from 'src/util/generateId';
 import { DbService } from './DbService';
 
 /**
@@ -20,16 +20,20 @@ export class TripService {
   }
 
   public async getTrip(creationId: string): Promise<DbTrip> {
-    return await this.dbService.getItem<DbKey, DbTrip>({
+    return await this.dbService.getItem<DbTrip>({
       projectEntity: SadalsuudEntity.trip,
       creationId,
     });
   }
 
-  public async addTrip(trip: Trip): Promise<PutItemOutput> {
-    return await this.dbService.putItem<DbTrip>({
+  public async addTrip(trip: Trip): Promise<void> {
+    const creationId: string = generateId();
+
+    // add trips to user
+
+    await this.dbService.putItem<DbTrip>({
       projectEntity: SadalsuudEntity.trip,
-      creationId: Date.now().toString(16),
+      creationId,
       ...trip,
     });
   }
