@@ -1,6 +1,6 @@
 import { DbKey } from 'src/model/DbKey';
 
-enum Role { // may add to db and use id
+enum Role {
   STAR_RAIN = 'starRain',
   FAMILY = 'family',
   STAR = 'star',
@@ -31,4 +31,5 @@ export type StarUser = UserCommon & {
   trips: string[];
 };
 
+export type DbUserCommon = UserCommon & DbKey;
 export type DbUser = User & DbKey;

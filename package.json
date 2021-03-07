@@ -23,6 +23,7 @@
     "deploy:prod": "run-s clean build serverless:package serverless:prod"
   },
   "dependencies": {
+    "@line/bot-sdk": "^7.2.0",
     "aws-sdk": "^2.848.0",
     "inversify": "^5.0.5",
     "reflect-metadata": "^0.1.13"

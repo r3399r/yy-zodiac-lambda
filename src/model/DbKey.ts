@@ -1,6 +1,8 @@
+export type Entity = SadalsuudEntity | LineEntity;
+
 export enum SadalsuudEntity {
   trip = 'sadalsuud-trip',
-  application = 'sadalsuud-application',
+  sign = 'sadalsuud-sign',
   target = 'sadalsuud-target',
 }
 
@@ -9,6 +11,6 @@ export enum LineEntity {
 }
 
 export interface DbKey {
-  projectEntity: SadalsuudEntity | LineEntity;
+  projectEntity: Entity;
   creationId: string;
 }

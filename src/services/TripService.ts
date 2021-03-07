@@ -13,10 +13,7 @@ export class TripService {
   private readonly dbService!: DbService;
 
   public async getTrips(): Promise<DbTrip[]> {
-    return await this.dbService.query<DbTrip>({
-      key: 'projectEntity',
-      value: SadalsuudEntity.trip,
-    });
+    return await this.dbService.query<DbTrip>(SadalsuudEntity.trip);
   }
 
   public async getTrip(creationId: string): Promise<DbTrip> {

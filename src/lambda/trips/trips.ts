@@ -1,9 +1,9 @@
 import { PutItemOutput } from 'aws-sdk/clients/dynamodb';
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
-import { TripsEvent } from 'src/lambda/trips/tripsEvent';
 import { DbTrip, Trip } from 'src/model/Trip';
 import { TripService } from 'src/services/TripService';
+import { TripsEvent } from './TripsEvent';
 
 export async function trips(
   event: TripsEvent,

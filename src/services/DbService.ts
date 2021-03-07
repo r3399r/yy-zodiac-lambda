@@ -10,7 +10,7 @@ import {
   QueryOutput,
 } from 'aws-sdk/clients/dynamodb';
 import { inject, injectable } from 'inversify';
-import { DbKey } from 'src/model/DbKey';
+import { DbKey, Entity } from 'src/model/DbKey';
 
 interface KeyValue {
   key: string;
@@ -50,23 +50,30 @@ export class DbService {
   }
 
   public async query<T>(
-    partitionKeyVal: KeyValue,
-    filterKeyVal?: KeyValue
+    partitionKey: Entity,
+    filterKeyVal?: KeyValue[]
   ): Promise<T[]> {
     const expressionAttributeValues: { [key: string]: any } = {
-      ':key': partitionKeyVal.value,
+      ':key': partitionKey,
     };
+
     if (filterKeyVal !== undefined) {
-      expressionAttributeValues[':a'] = filterKeyVal.value;
+      for (const filter of filterKeyVal) {
+        expressionAttributeValues[`:${filter.key}`] = filter.value;
+      }
     }
 
     const params: QueryInput = {
       TableName: this.tableName,
       ExpressionAttributeValues: Converter.marshall(expressionAttributeValues),
-      KeyConditionExpression: `${partitionKeyVal.key} = :key`,
+      KeyConditionExpression: 'projectEntity = :key',
     };
     if (filterKeyVal !== undefined) {
-      params.FilterExpression = `${filterKeyVal.key} = :a`;
+      const customArray: string[] = [];
+      for (const filter of filterKeyVal) {
+        customArray.push(`${filter.key} = :${filter.key}`);
+      }
+      params.FilterExpression = customArray.join(' and ');
     }
 
     const res: QueryOutput = await this.dynamoDb.query(params).promise();
