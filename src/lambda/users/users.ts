@@ -1,6 +1,6 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
-import { User } from 'src/model/User';
+import { DbUser, User } from 'src/model/User';
 import { UserService } from 'src/services/UserService';
 import { UsersEvent } from './UsersEvent';
 
@@ -8,10 +8,9 @@ export async function users(
   event: UsersEvent,
   _context?: LambdaContext
 ): Promise<any> {
-  console.log(event);
   const userService: UserService = bindings.get<UserService>(UserService);
 
-  let res: any;
+  let res: DbUser | null | void;
 
   switch (event.httpMethod) {
     case 'GET':
@@ -23,9 +22,6 @@ export async function users(
       }
       const user: User = JSON.parse(event.body);
       res = await userService.addUser(user);
-      break;
-    case 'PUT':
-      console.log('put');
       break;
     default:
       throw new Error('unknown http method');

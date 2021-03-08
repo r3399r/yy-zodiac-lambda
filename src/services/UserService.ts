@@ -11,11 +11,25 @@ export class UserService {
   @inject(DbService)
   private readonly dbService!: DbService;
 
-  public async getUser(creationId: string): Promise<DbUser> {
-    return await this.dbService.getItem<DbUser>({
-      projectEntity: LineEntity.user,
-      creationId,
-    });
+  public async getUser(lineUserId: string): Promise<DbUser | null> {
+    const userResult: DbUser[] = await this.dbService.query<DbUser>(
+      LineEntity.user,
+      [
+        {
+          key: 'lineUserId',
+          value: lineUserId,
+        },
+      ]
+    );
+
+    if (userResult.length > 1) {
+      throw new Error('Get multiple users with same lineUserId');
+    }
+    if (userResult.length === 0) {
+      return null;
+    }
+
+    return userResult[0];
   }
 
   public async addEmptyUser(user: UserCommon): Promise<void> {

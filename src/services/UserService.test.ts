@@ -1,7 +1,7 @@
-import { DynamoDB } from 'aws-sdk';
-import { Converter, GetItemOutput } from 'aws-sdk/clients/dynamodb';
 import { bindings } from 'src/bindings';
-import { AWSMockUtil } from 'test/AWSMockUtil';
+import { LineEntity } from 'src/model/DbKey';
+import { DbUser, Role } from 'src/model/User';
+import { DbService } from './DbService';
 import { UserService } from './UserService';
 
 /**
@@ -9,15 +9,24 @@ import { UserService } from './UserService';
  */
 describe('UserService', (): void => {
   let userService: UserService;
-  const mockDynamoDB: any = {};
+  const mockDbService: any = {};
+  let mockDummyItem: DbUser[];
 
   beforeEach((): void => {
-    const mockDummyItem: GetItemOutput = {
-      Item: Converter.marshall({ key: 'value' }),
-    };
+    mockDummyItem = [
+      {
+        projectEntity: LineEntity.user,
+        creationId: 'test',
+        lineUserId: 'test',
+        role: Role.STAR_RAIN,
+        joinSession: 40,
+        phone: 'phone',
+        trips: [],
+      },
+    ];
 
-    mockDynamoDB.getItem = AWSMockUtil.mockRequest(mockDummyItem);
-    bindings.rebind<DynamoDB>(DynamoDB).toConstantValue(mockDynamoDB);
+    mockDbService.query = jest.fn(() => mockDummyItem);
+    bindings.rebind<DbService>(DbService).toConstantValue(mockDbService);
 
     userService = bindings.get<UserService>(UserService);
   });
@@ -25,6 +34,6 @@ describe('UserService', (): void => {
   it('getUser should work', async (): Promise<void> => {
     const res: any = await userService.getUser('abc');
 
-    expect(res).toStrictEqual({ key: 'value' });
+    expect(res).toStrictEqual(mockDummyItem[0]);
   });
 });

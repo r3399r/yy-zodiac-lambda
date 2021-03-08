@@ -10,6 +10,8 @@ export type User = StarRainUser | FamilyUser | StarUser;
 
 export interface UserCommon {
   lineUserId: string;
+  name?: string;
+  birthday?: string;
 }
 
 export type StarRainUser = UserCommon & {

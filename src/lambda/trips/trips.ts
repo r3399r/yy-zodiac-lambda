@@ -28,9 +28,6 @@ export async function trips(
       const trip: Trip = JSON.parse(event.body);
       res = await tripService.addTrip(trip);
       break;
-    case 'PUT':
-      console.log('put');
-      break;
     default:
       throw new Error('unknown http method');
   }
