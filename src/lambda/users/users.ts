@@ -2,7 +2,7 @@ import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { User } from 'src/model/User';
 import { UserService } from 'src/services/UserService';
-import { UsersEvent } from './UserEvent';
+import { UsersEvent } from './UsersEvent';
 
 export async function users(
   event: UsersEvent,
