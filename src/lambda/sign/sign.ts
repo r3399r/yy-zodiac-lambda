@@ -2,6 +2,7 @@ import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { InputSign } from 'src/model/Sign';
 import { SignService } from 'src/services/SignService';
+import { successOutput } from 'src/util/LambdaOutput';
 import { SignEvent } from './SignEvent';
 
 export async function sign(
@@ -24,11 +25,5 @@ export async function sign(
       throw new Error('unknown http method');
   }
 
-  return {
-    statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*', // Required for CORS support to work
-    },
-    body: JSON.stringify(res),
-  };
+  return successOutput(res);
 }

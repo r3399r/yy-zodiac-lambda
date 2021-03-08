@@ -2,6 +2,7 @@ import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { DbUser, User } from 'src/model/User';
 import { UserService } from 'src/services/UserService';
+import { successOutput } from 'src/util/LambdaOutput';
 import { UsersEvent } from './UsersEvent';
 
 export async function users(
@@ -14,6 +15,9 @@ export async function users(
 
   switch (event.httpMethod) {
     case 'GET':
+      if (event.pathParameters === null) {
+        throw new Error('null path parameter');
+      }
       res = await userService.getUser(event.pathParameters.id);
       break;
     case 'POST':
@@ -27,11 +31,5 @@ export async function users(
       throw new Error('unknown http method');
   }
 
-  return {
-    statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*', // Required for CORS support to work
-    },
-    body: JSON.stringify(res),
-  };
+  return successOutput(res);
 }
