@@ -1,6 +1,6 @@
 import { DbKey } from 'src/model/DbKey';
 
-enum Role {
+export enum Role {
   STAR_RAIN = 'starRain',
   FAMILY = 'family',
   STAR = 'star',

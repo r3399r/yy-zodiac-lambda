@@ -3,7 +3,7 @@ import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { DbTrip, Trip } from 'src/model/Trip';
 import { TripService } from 'src/services/TripService';
-import { TripsEvent } from './TripsEvent';
+import { TripsEvent } from './TripEvent';
 
 export async function trips(
   event: TripsEvent,

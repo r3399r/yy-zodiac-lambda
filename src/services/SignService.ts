@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { LineEntity, SadalsuudEntity } from 'src/model/DbKey';
 import { DbSign, InputSign } from 'src/model/Sign';
-import { DbUser } from 'src/model/User';
+import { DbUser, Role } from 'src/model/User';
 import { generateId } from 'src/util/generateId';
 import { DbService } from './DbService';
 import { LineService } from './LineService';
@@ -50,6 +50,11 @@ export class SignService {
     }
 
     const user: DbUser = userResult[0];
+
+    // if role is STAR_RAIN, return
+    if (user.role === Role.STAR_RAIN) {
+      return '哈囉星雨的哥姐，此報名僅開放給星兒或家長。若你想主揪星遊或你並不是星雨的成員，請洽LINE官方帳號，謝謝';
+    }
 
     // find trip-user pair
     const existentSign: DbSign[] = await this.dbService.query<DbSign>(

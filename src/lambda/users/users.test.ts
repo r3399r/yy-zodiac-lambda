@@ -1,7 +1,7 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
+import { UsersEvent } from 'src/lambda/users/UserEvent';
 import { users } from 'src/lambda/users/users';
-import { UsersEvent } from 'src/lambda/users/UsersEvent';
 import { UserService } from 'src/services/UserService';
 /**
  * Tests of the users function.
