@@ -84,6 +84,15 @@
     "no-unused-variable": false,
     // forces all file names to be hard-coded
     "non-literal-fs-path": false,
+    // define type definition
+    "typedef": [
+      true,
+      "arrow-parameter",
+      "call-signature",
+      "paramter",
+      "property-declaration",
+      "member-variable-declaration"
+    ],
     // the leading underscore is ugly but indispensible as it's built into tsc to permit unused method args
     "variable-name": [
       true,

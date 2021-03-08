@@ -1,27 +1,24 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
-import { DbUser, User } from 'src/model/User';
-import { UserService } from 'src/services/UserService';
-import { UsersEvent } from './UsersEvent';
+import { InputSign } from 'src/model/Sign';
+import { SignService } from 'src/services/SignService';
+import { SignEvent } from './SignEvent';
 
-export async function users(
-  event: UsersEvent,
+export async function sign(
+  event: SignEvent,
   _context?: LambdaContext
 ): Promise<any> {
-  const userService: UserService = bindings.get<UserService>(UserService);
+  const signService: SignService = bindings.get<SignService>(SignService);
 
-  let res: DbUser | null | void;
+  let res: string | void;
 
   switch (event.httpMethod) {
-    case 'GET':
-      res = await userService.getUser(event.pathParameters.id);
-      break;
     case 'POST':
       if (event.body === null) {
         throw new Error('null body');
       }
-      const user: User = JSON.parse(event.body);
-      res = await userService.addUser(user);
+      const newSign: InputSign = JSON.parse(event.body);
+      res = await signService.addSign(newSign);
       break;
     default:
       throw new Error('unknown http method');

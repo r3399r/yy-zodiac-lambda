@@ -1,7 +1,7 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { users } from 'src/lambda/users/users';
-import { UsersEvent } from 'src/lambda/users/usersEvent';
+import { UsersEvent } from 'src/lambda/users/UsersEvent';
 import { UserService } from 'src/services/UserService';
 /**
  * Tests of the users function.
@@ -26,10 +26,14 @@ describe('users', (): void => {
   it('function should work', async (): Promise<void> => {
     event = {
       httpMethod: 'GET',
-      queryStringParameters: { userId: 'abc' },
+      body: null,
+      pathParameters: { id: 'abc' },
     };
     await expect(users(event, lambdaContext)).resolves.toStrictEqual({
       statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
       body: JSON.stringify('abc'),
     });
     expect(mockUserService.getUser).toBeCalledTimes(1);
