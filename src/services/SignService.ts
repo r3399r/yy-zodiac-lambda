@@ -32,14 +32,17 @@ export class SignService {
 
     // if user does not exist or role does not exist in user, return
     if (user === null || user.role === undefined) {
-      await this.lineService.pushMessage(sign.lineUserId, '測試測試');
+      await this.lineService.pushMessage(
+        sign.lineUserId,
+        '您好，為了讓活動順利進行，我們會先詢問孩子的一些基本資訊，請您提供方便回覆訊息的時間，讓我們能夠聯繫您，做一些簡短的認識'
+      );
 
-      return '注意LINE';
+      return '請開啟LINE回覆星遊的官方帳號';
     }
 
     // if role is STAR_RAIN, return
     if (user.role === Role.STAR_RAIN) {
-      return '哈囉星雨的哥姐，此報名僅開放給星兒或家長。若你想主揪星遊或你並不是星雨的成員，請洽LINE官方帳號，謝謝';
+      return '哈囉星雨的哥姐，此活動僅開放給星兒或家長報名。若你想參加活動或你並不是星雨的成員，請洽星遊的LINE官方帳號，謝謝';
     }
 
     // find trip-user pair
