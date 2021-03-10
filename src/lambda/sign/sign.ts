@@ -2,13 +2,13 @@ import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { InputSign } from 'src/model/Sign';
 import { SignService } from 'src/services/SignService';
-import { successOutput } from 'src/util/LambdaOutput';
+import { LambdaOutput, successOutput } from 'src/util/LambdaOutput';
 import { SignEvent } from './SignEvent';
 
 export async function sign(
   event: SignEvent,
   _context?: LambdaContext
-): Promise<any> {
+): Promise<LambdaOutput> {
   const signService: SignService = bindings.get<SignService>(SignService);
 
   let res: string | void;

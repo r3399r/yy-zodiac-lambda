@@ -2,13 +2,13 @@ import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { DbUser, User } from 'src/model/User';
 import { UserService } from 'src/services/UserService';
-import { successOutput } from 'src/util/LambdaOutput';
+import { LambdaOutput, successOutput } from 'src/util/LambdaOutput';
 import { UsersEvent } from './UsersEvent';
 
 export async function users(
   event: UsersEvent,
   _context?: LambdaContext
-): Promise<any> {
+): Promise<LambdaOutput> {
   const userService: UserService = bindings.get<UserService>(UserService);
 
   let res: DbUser | null | void;

@@ -3,13 +3,13 @@ import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { DbTrip, Trip } from 'src/model/Trip';
 import { TripService } from 'src/services/TripService';
-import { successOutput } from 'src/util/LambdaOutput';
+import { LambdaOutput, successOutput } from 'src/util/LambdaOutput';
 import { TripsEvent } from './TripsEvent';
 
 export async function trips(
   event: TripsEvent,
   _context?: LambdaContext
-): Promise<any> {
+): Promise<LambdaOutput> {
   const tripService: TripService = bindings.get<TripService>(TripService);
 
   let res: DbTrip | DbTrip[] | PutItemOutput | void;

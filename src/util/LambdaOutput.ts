@@ -1,11 +1,10 @@
-interface Output {
+export interface LambdaOutput {
   statusCode: number;
   headers: { [key: string]: string };
   body: string;
 }
 
-// tslint:disable: export-name
-export function successOutput<T>(res: T): Output {
+export function successOutput<T>(res: T): LambdaOutput {
   return {
     statusCode: 200,
     headers: {

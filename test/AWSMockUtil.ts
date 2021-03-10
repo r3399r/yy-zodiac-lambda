@@ -2,18 +2,10 @@
  * Helpers for mocking AWS services.
  */
 export class AWSMockUtil {
-  public static mockRequest(responseValue: any): jest.Mock {
-    return jest.fn(():any => ({
-      promise: async (): Promise<any> => {
+  public static mockRequest<T>(responseValue: T): jest.Mock {
+    return jest.fn(() => ({
+      promise: async () => {
         return Promise.resolve(responseValue);
-      },
-    }));
-  }
-
-  public static mockRequestWhichReturnsError(responseValue: any): jest.Mock {
-    return jest.fn(():any => ({
-      promise: async (): Promise<any> => {
-        return Promise.reject(responseValue);
       },
     }));
   }
