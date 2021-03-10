@@ -3,6 +3,7 @@ import { LineEntity } from 'src/model/DbKey';
 import { DbUser, DbUserCommon, User, UserCommon } from 'src/model/User';
 import { generateId } from 'src/util/generateId';
 import { DbService } from './DbService';
+
 /**
  * Service class for user
  */

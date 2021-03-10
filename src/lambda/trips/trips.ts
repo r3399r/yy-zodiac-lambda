@@ -3,12 +3,13 @@ import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { DbTrip, Trip } from 'src/model/Trip';
 import { TripService } from 'src/services/TripService';
+import { LambdaOutput, successOutput } from 'src/util/LambdaOutput';
 import { TripsEvent } from './TripsEvent';
 
 export async function trips(
   event: TripsEvent,
   _context?: LambdaContext
-): Promise<any> {
+): Promise<LambdaOutput> {
   const tripService: TripService = bindings.get<TripService>(TripService);
 
   let res: DbTrip | DbTrip[] | PutItemOutput | void;
@@ -32,11 +33,5 @@ export async function trips(
       throw new Error('unknown http method');
   }
 
-  return {
-    statusCode: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*', // Required for CORS support to work
-    },
-    body: JSON.stringify(res),
-  };
+  return successOutput(res);
 }
