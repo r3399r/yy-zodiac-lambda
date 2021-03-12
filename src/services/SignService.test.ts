@@ -1,7 +1,7 @@
 import { bindings } from 'src/bindings';
-import { LineEntity, SadalsuudEntity } from 'src/model/DbKey';
-import { DbSign } from 'src/model/Sign';
-import { DbUser, Role } from 'src/model/User';
+import { SadalsuudEntity } from 'src/model/DbKey';
+import { DbSign } from 'src/model/sadalsuud/Sign';
+import { DbUser, Role } from 'src/model/sadalsuud/User';
 import { DbService } from './DbService';
 import { LineService } from './LineService';
 import { SignService } from './SignService';
@@ -20,7 +20,7 @@ describe('SignService', () => {
 
   beforeAll(() => {
     dummyUser = {
-      projectEntity: LineEntity.user,
+      projectEntity: SadalsuudEntity.user,
       creationId: 'testUserId',
       lineUserId: 'testLineId',
       role: Role.FAMILY,
@@ -71,7 +71,7 @@ describe('SignService', () => {
 
   it('addSign should work for new user', async () => {
     mockUserService.getUser = jest.fn(() => null);
-    mockUserService.addEmptyUser = jest.fn();
+    mockUserService.addEmptySadalsuudUser = jest.fn();
     mockLineService.pushMessage = jest.fn();
 
     const res: string = await signService.addSign({
@@ -79,13 +79,13 @@ describe('SignService', () => {
       lineUserId: dummyUser.lineUserId,
     });
     expect(res).toBe('請開啟LINE回覆星遊的官方帳號');
-    expect(mockUserService.addEmptyUser).toBeCalledTimes(1);
+    expect(mockUserService.addEmptySadalsuudUser).toBeCalledTimes(1);
     expect(mockLineService.pushMessage).toBeCalledTimes(1);
   });
 
   it('addSign should work for star-rain member', async () => {
     const starRainMember: DbUser = {
-      projectEntity: LineEntity.user,
+      projectEntity: SadalsuudEntity.user,
       creationId: 'creationId',
       lineUserId: 'testMember',
       role: Role.STAR_RAIN,

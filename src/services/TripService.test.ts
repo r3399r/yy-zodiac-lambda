@@ -1,6 +1,6 @@
 import { bindings } from 'src/bindings';
 import { SadalsuudEntity } from 'src/model/DbKey';
-import { DbTrip, Trip } from 'src/model/Trip';
+import { DbTrip, Trip } from 'src/model/sadalsuud/Trip';
 import { DbService } from './DbService';
 import { TripService } from './TripService';
 

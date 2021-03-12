@@ -1,6 +1,7 @@
 import { bindings } from 'src/bindings';
-import { LineEntity } from 'src/model/DbKey';
-import { DbUser, Role, User, UserCommon } from 'src/model/User';
+import { SadalsuudEntity } from 'src/model/DbKey';
+import { Role, UserCommon } from 'src/model/sadalsuud/User';
+import { DbUser, User } from 'src/model/User';
 import { DbService } from './DbService';
 import { UserService } from './UserService';
 
@@ -22,7 +23,7 @@ describe('UserService', () => {
       trips: [],
     };
     dummyDbUser = {
-      projectEntity: LineEntity.user,
+      projectEntity: SadalsuudEntity.user,
       creationId: 'test',
       ...dummyUser,
     };
@@ -40,34 +41,40 @@ describe('UserService', () => {
   it('getUser should work', async () => {
     mockDbService.query = jest.fn(() => [dummyDbUser]);
 
-    const res: DbUser | null = await userService.getUser('abc');
+    const res: DbUser | null = await userService.getUser(
+      SadalsuudEntity.user,
+      'abc'
+    );
     expect(res).toStrictEqual(dummyDbUser);
   });
 
   it('getUser should return null', async () => {
     mockDbService.query = jest.fn(() => []);
 
-    const res: DbUser | null = await userService.getUser('abc');
+    const res: DbUser | null = await userService.getUser(
+      SadalsuudEntity.user,
+      'abc'
+    );
     expect(res).toBeNull();
   });
 
   it('getUser should fail with abnormal result', async () => {
     mockDbService.query = jest.fn(() => [dummyDbUser, dummyDbUser]);
 
-    await expect(userService.getUser('abc')).rejects.toThrow(
-      'Get multiple users with same lineUserId'
-    );
+    await expect(
+      userService.getUser(SadalsuudEntity.user, 'abc')
+    ).rejects.toThrow('Get multiple users with same lineUserId');
   });
 
   it('addEmptyUser should work', async () => {
     const input: UserCommon = { lineUserId: 'testLineId' };
-    await userService.addEmptyUser(input);
+    await userService.addEmptySadalsuudUser(input);
 
     expect(mockDbService.putItem).toBeCalledTimes(1);
   });
 
   it('addUser should work', async () => {
-    await userService.addUser(dummyUser);
+    await userService.addUser(SadalsuudEntity.user, dummyUser);
 
     expect(mockDbService.putItem).toBeCalledTimes(1);
   });

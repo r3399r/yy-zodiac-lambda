@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { SadalsuudEntity } from 'src/model/DbKey';
-import { DbSign, InputSign } from 'src/model/Sign';
-import { DbUser, Role } from 'src/model/User';
+import { DbSign, InputSign } from 'src/model/sadalsuud/Sign';
+import { DbUser, Role } from 'src/model/sadalsuud/User';
 import { generateId } from 'src/util/generateId';
 import { DbService } from './DbService';
 import { LineService } from './LineService';
@@ -23,11 +23,16 @@ export class SignService {
 
   public async addSign(sign: InputSign): Promise<string> {
     // find linsUserId in line-user of db
-    const user: DbUser | null = await this.userService.getUser(sign.lineUserId);
+    const user: DbUser | null = await this.userService.getUser(
+      SadalsuudEntity.user,
+      sign.lineUserId
+    );
 
     // if user does not exist, add user
     if (user === null) {
-      await this.userService.addEmptyUser({ lineUserId: sign.lineUserId });
+      await this.userService.addEmptySadalsuudUser({
+        lineUserId: sign.lineUserId,
+      });
     }
 
     // if user does not exist or role does not exist in user, return

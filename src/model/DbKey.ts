@@ -1,13 +1,10 @@
-export type Entity = SadalsuudEntity | LineEntity;
+export type Entity = SadalsuudEntity;
 
 export enum SadalsuudEntity {
   trip = 'sadalsuud-trip',
   sign = 'sadalsuud-sign',
   target = 'sadalsuud-target',
-}
-
-export enum LineEntity {
-  user = 'line-user',
+  user = 'sadalsuud-user',
 }
 
 export interface DbKey {

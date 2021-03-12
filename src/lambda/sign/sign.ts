@@ -1,6 +1,6 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
-import { InputSign } from 'src/model/Sign';
+import { InputSign } from 'src/model/sadalsuud/Sign';
 import { SignService } from 'src/services/SignService';
 import { LambdaOutput, successOutput } from 'src/util/LambdaOutput';
 import { SignEvent } from './SignEvent';

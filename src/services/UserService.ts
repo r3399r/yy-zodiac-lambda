@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
-import { LineEntity } from 'src/model/DbKey';
-import { DbUser, DbUserCommon, User, UserCommon } from 'src/model/User';
+import { Entity, SadalsuudEntity } from 'src/model/DbKey';
+import { DbUserCommon, UserCommon } from 'src/model/sadalsuud/User';
+import { DbUser, User } from 'src/model/User';
 import { generateId } from 'src/util/generateId';
 import { DbService } from './DbService';
 
@@ -12,9 +13,12 @@ export class UserService {
   @inject(DbService)
   private readonly dbService!: DbService;
 
-  public async getUser(lineUserId: string): Promise<DbUser | null> {
+  public async getUser(
+    projectEntity: Entity,
+    lineUserId: string
+  ): Promise<DbUser | null> {
     const userResult: DbUser[] = await this.dbService.query<DbUser>(
-      LineEntity.user,
+      projectEntity,
       [
         {
           key: 'lineUserId',
@@ -33,21 +37,21 @@ export class UserService {
     return userResult[0];
   }
 
-  public async addEmptyUser(user: UserCommon): Promise<void> {
+  public async addEmptySadalsuudUser(user: UserCommon): Promise<void> {
     const creationId: string = generateId();
 
     await this.dbService.putItem<DbUserCommon>({
-      projectEntity: LineEntity.user,
+      projectEntity: SadalsuudEntity.user,
       creationId,
       ...user,
     });
   }
 
-  public async addUser(user: User): Promise<void> {
+  public async addUser(projectEntity: Entity, user: User): Promise<void> {
     const creationId: string = generateId();
 
     await this.dbService.putItem<DbUser>({
-      projectEntity: LineEntity.user,
+      projectEntity,
       creationId,
       ...user,
     });

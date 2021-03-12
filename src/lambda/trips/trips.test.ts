@@ -1,7 +1,7 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { SadalsuudEntity } from 'src/model/DbKey';
-import { DbTrip } from 'src/model/Trip';
+import { DbTrip } from 'src/model/sadalsuud/Trip';
 import { TripService } from 'src/services/TripService';
 import { successOutput } from 'src/util/LambdaOutput';
 import { trips } from './trips';
