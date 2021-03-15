@@ -4,7 +4,9 @@ export interface UsersEvent {
   httpMethod: string;
   body: string | null;
   pathParameters: {
-    entity?: Entity;
     id?: string;
+  } | null;
+  queryStringParameters: {
+    entity?: Entity;
   } | null;
 }

@@ -43,7 +43,8 @@ describe('users', () => {
     event = {
       httpMethod: 'GET',
       body: null,
-      pathParameters: { id: 'abc', entity: SadalsuudEntity.user },
+      pathParameters: { id: 'abc' },
+      queryStringParameters: { entity: SadalsuudEntity.user },
     };
     await expect(users(event, lambdaContext)).resolves.toStrictEqual(
       successOutput(dummyUser)
@@ -56,9 +57,22 @@ describe('users', () => {
       httpMethod: 'GET',
       body: null,
       pathParameters: null,
+      queryStringParameters: null,
     };
     await expect(users(event, lambdaContext)).rejects.toThrow(
       'null path parameter'
+    );
+  });
+
+  it('GET should fail with null query string', async () => {
+    event = {
+      httpMethod: 'GET',
+      body: null,
+      pathParameters: { id: 'abc' },
+      queryStringParameters: null,
+    };
+    await expect(users(event, lambdaContext)).rejects.toThrow(
+      'null query string parameters'
     );
   });
 
@@ -67,6 +81,7 @@ describe('users', () => {
       httpMethod: 'GET',
       body: null,
       pathParameters: { id: 'abc' },
+      queryStringParameters: { entity: undefined },
     };
     await expect(users(event, lambdaContext)).rejects.toThrow(
       'missing project entity'
@@ -77,7 +92,8 @@ describe('users', () => {
     event = {
       httpMethod: 'GET',
       body: null,
-      pathParameters: { entity: SadalsuudEntity.user },
+      pathParameters: { id: undefined },
+      queryStringParameters: { entity: SadalsuudEntity.user },
     };
     await expect(users(event, lambdaContext)).rejects.toThrow(
       'missing user id'
@@ -88,28 +104,31 @@ describe('users', () => {
     event = {
       httpMethod: 'POST',
       body: JSON.stringify(dummyUser),
-      pathParameters: { entity: SadalsuudEntity.user },
+      pathParameters: null,
+      queryStringParameters: { entity: SadalsuudEntity.user },
     };
     await users(event, lambdaContext);
     expect(mockUserService.addUser).toBeCalledTimes(1);
   });
 
-  it('POST should fail with null parameter', async () => {
+  it('POST should fail with null query string', async () => {
     event = {
       httpMethod: 'POST',
-      body: null,
+      body: JSON.stringify(dummyUser),
       pathParameters: null,
+      queryStringParameters: null,
     };
     await expect(users(event, lambdaContext)).rejects.toThrow(
-      'null path parameter'
+      'null query string parameters'
     );
   });
 
-  it('GET should fail without entity', async () => {
+  it('POST should fail without entity', async () => {
     event = {
       httpMethod: 'POST',
-      body: null,
-      pathParameters: { id: 'abc' },
+      body: JSON.stringify(dummyUser),
+      pathParameters: null,
+      queryStringParameters: { entity: undefined },
     };
     await expect(users(event, lambdaContext)).rejects.toThrow(
       'missing project entity'
@@ -120,7 +139,8 @@ describe('users', () => {
     event = {
       httpMethod: 'POST',
       body: null,
-      pathParameters: { entity: SadalsuudEntity.user },
+      pathParameters: null,
+      queryStringParameters: { entity: SadalsuudEntity.user },
     };
     await expect(users(event, lambdaContext)).rejects.toThrow('null body');
   });
@@ -130,6 +150,7 @@ describe('users', () => {
       httpMethod: 'UNKNONW',
       body: null,
       pathParameters: null,
+      queryStringParameters: null,
     };
     await expect(users(event, lambdaContext)).rejects.toThrow(
       'unknown http method'
