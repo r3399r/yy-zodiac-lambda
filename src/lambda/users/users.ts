@@ -15,33 +15,26 @@ export async function users(
 
   switch (event.httpMethod) {
     case 'GET':
-      if (event.pathParameters === null) {
-        throw new Error('null path parameter');
-      }
-      if (event.queryStringParameters === null) {
+      if (event.pathParameters === null) throw new Error('null path parameter');
+      if (event.queryStringParameters === null)
         throw new Error('null query string parameters');
-      }
-      if (event.queryStringParameters.entity === undefined) {
+      if (event.queryStringParameters.entity === undefined)
         throw new Error('missing project entity');
-      }
-      if (event.pathParameters.id === undefined) {
+      if (event.pathParameters.id === undefined)
         throw new Error('missing user id');
-      }
+
       res = await userService.getUser(
         event.queryStringParameters.entity,
         event.pathParameters.id
       );
       break;
     case 'POST':
-      if (event.queryStringParameters === null) {
+      if (event.queryStringParameters === null)
         throw new Error('null query string parameters');
-      }
-      if (event.queryStringParameters.entity === undefined) {
+      if (event.queryStringParameters.entity === undefined)
         throw new Error('missing project entity');
-      }
-      if (event.body === null) {
-        throw new Error('null body');
-      }
+      if (event.body === null) throw new Error('null body');
+
       const user: User = JSON.parse(event.body);
       res = await userService.addUser(event.queryStringParameters.entity, user);
       break;

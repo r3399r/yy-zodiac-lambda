@@ -15,9 +15,8 @@ export async function sign(
 
   switch (event.httpMethod) {
     case 'POST':
-      if (event.body === null) {
-        throw new Error('null body');
-      }
+      if (event.body === null) throw new Error('null body');
+
       const newSign: InputSign = JSON.parse(event.body);
       res = await signService.addSign(newSign);
       break;

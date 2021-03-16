@@ -29,11 +29,10 @@ export class SignService {
     );
 
     // if user does not exist, add user
-    if (user === null) {
+    if (user === null)
       await this.userService.addEmptySadalsuudUser({
         lineUserId: sign.lineUserId,
       });
-    }
 
     // if user does not exist or role does not exist in user, return
     if (user === null || user.role === undefined) {
@@ -46,9 +45,8 @@ export class SignService {
     }
 
     // if role is STAR_RAIN, return
-    if (user.role === Role.STAR_RAIN) {
+    if (user.role === Role.STAR_RAIN)
       return '哈囉星雨的哥姐，此活動僅開放給星兒或家長報名。若你想參加活動或你並不是星雨的成員，請洽星遊的LINE官方帳號，謝謝';
-    }
 
     // find trip-user pair
     const existentSign: DbSign[] = await this.dbService.query<DbSign>(
@@ -61,16 +59,13 @@ export class SignService {
         { key: 'userCreationId', value: user.creationId },
       ]
     );
-    if (existentSign.length > 1) {
+    if (existentSign.length > 1)
       throw new Error(
         'Get multiple signs with same tripCreationId and userCreationId'
       );
-    }
 
     // if sign exists, return
-    if (existentSign.length === 1) {
-      return '已經報名過囉';
-    }
+    if (existentSign.length === 1) return '已經報名過囉';
 
     // add trip-user-pair into sign db
     const creationId: string = generateId();

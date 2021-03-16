@@ -57,11 +57,9 @@ export class DbService {
       ':key': partitionKey,
     };
 
-    if (filterKeyVal !== undefined) {
-      for (const filter of filterKeyVal) {
+    if (filterKeyVal !== undefined)
+      for (const filter of filterKeyVal)
         expressionAttributeValues[`:${filter.key}`] = filter.value;
-      }
-    }
 
     const params: QueryInput = {
       TableName: this.tableName,
@@ -70,9 +68,8 @@ export class DbService {
     };
     if (filterKeyVal !== undefined) {
       const customArray: string[] = [];
-      for (const filter of filterKeyVal) {
+      for (const filter of filterKeyVal)
         customArray.push(`${filter.key} = :${filter.key}`);
-      }
       params.FilterExpression = customArray.join(' and ');
     }
 

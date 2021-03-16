@@ -27,12 +27,9 @@ export class UserService {
       ]
     );
 
-    if (userResult.length > 1) {
+    if (userResult.length > 1)
       throw new Error('Get multiple users with same lineUserId');
-    }
-    if (userResult.length === 0) {
-      return null;
-    }
+    if (userResult.length === 0) return null;
 
     return userResult[0];
   }
