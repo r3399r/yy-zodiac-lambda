@@ -5,6 +5,7 @@ import 'reflect-metadata';
 import { DbService } from 'src/services/DbService';
 import { LineService } from 'src/services/LineService';
 import { SignService } from 'src/services/SignService';
+import { SsmService } from 'src/services/SsmService';
 import { TripService } from 'src/services/TripService';
 import { UserService } from 'src/services/UserService';
 
@@ -13,6 +14,7 @@ const container: Container = new Container();
 container.bind<DbService>(DbService).toSelf();
 container.bind<LineService>(LineService).toSelf();
 container.bind<SignService>(SignService).toSelf();
+container.bind<SsmService>(SsmService).toSelf();
 container.bind<TripService>(TripService).toSelf();
 container.bind<UserService>(UserService).toSelf();
 
