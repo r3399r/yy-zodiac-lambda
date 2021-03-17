@@ -645,8 +645,6 @@ Resources:
       Environment:
         Variables:
           ENVR: !Sub ${TargetEnvr}
-          SADALSUUD_CHANNEL_SECRET: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-channel-secret:1}}'
-          SADALSUUD_CHANNEL_TOKEN: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-channel-token:1}}'
           SADALSUUD_CHANNEL_URL: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-channel-url:1}}'
           SADALSUUD_LOGIN_ID: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-login-id:1}}'
           SADALSUUD_LOGIN_SECRET: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-login-secret:1}}'
