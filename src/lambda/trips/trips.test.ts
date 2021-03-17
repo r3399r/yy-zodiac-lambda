@@ -26,7 +26,7 @@ describe('trips', () => {
       endDate: '2020-02-28T20:00:00.000Z',
       place: 'here',
       meetPlace: 'there',
-      fee: 10,
+      fee: '$10',
       participants: [],
       needFamilyAccompany: 'yes',
       quota: 2,

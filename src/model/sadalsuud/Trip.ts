@@ -8,7 +8,7 @@ export interface Trip {
   endDate: string; // ISO string
   place: string;
   meetPlace: string;
-  fee: number;
+  fee: string;
   thingsToBring?: string;
   participants: string[];
   needFamilyAccompany: string; // yes, no, other
