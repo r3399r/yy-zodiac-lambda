@@ -15,11 +15,10 @@ Parameters:
   NodeJsVer:
     Type: String
     Default: nodejs12.x
-  TargetEnvr:  
+  TargetEnvr:
     Type: String
     Default: dev
     Description: The target environment for API Gateway deployment.
-
 Resources:
   #######################################################
   ##### Start of API Gateway and associated lambdas #####
@@ -100,6 +99,77 @@ Resources:
                       "responseParameters": {
                         "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'",
                         "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                        "method.response.header.Access-Control-Allow-Origin": "'*'"
+                      }
+                    }
+                  },
+                  "requestTemplates": {
+                    "application/json": "{\"statusCode\": 200}"
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "type": "mock"
+                }
+              }
+            },
+            "/api/ssm": {
+              "get": {
+                "produces": [
+                  "application/json"
+                ],
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    }
+                  }
+                },
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "uri": !Sub "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:278497686406:function:${TargetEnvr}-ssm/invocations",
+                  "responses": {
+                    "default": {
+                      "statusCode": "200"
+                    }
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "contentHandling": "CONVERT_TO_TEXT",
+                  "type": "aws_proxy"
+                }
+              },
+              "options": {
+                "consumes": [
+                  "application/json"
+                ],
+                "produces": [
+                  "application/json"
+                ],
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    },
+                    "headers": {
+                      "Access-Control-Allow-Origin": {
+                        "type": "string"
+                      },
+                      "Access-Control-Allow-Methods": {
+                        "type": "string"
+                      },
+                      "Access-Control-Allow-Headers": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "x-amazon-apigateway-integration": {
+                  "responses": {
+                    "default": {
+                      "statusCode": "200",
+                      "responseParameters": {
+                        "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
                         "method.response.header.Access-Control-Allow-Origin": "'*'"
                       }
                     }
@@ -560,6 +630,29 @@ Resources:
     DependsOn: [ServerlessApi, LambdaSign]
     Properties:
         FunctionName: !Sub ${TargetEnvr}-sign
+        Action: lambda:InvokeFunction
+        Principal: apigateway.amazonaws.com
+        SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
+  LambdaSsm:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.ssm
+      Runtime: !Sub ${NodeJsVer}
+      FunctionName: !Sub ${TargetEnvr}-ssm
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${LambdaExecutionRole}"
+      CodeUri: ../../dist/webpack/lambda
+      MemorySize: 128
+      Environment:
+        Variables:
+          ENVR: !Sub ${TargetEnvr}
+          SADALSUUD_CHANNEL_URL: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-channel-url:1}}'
+          SADALSUUD_LOGIN_ID: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-login-id:1}}'
+          SADALSUUD_LOGIN_SECRET: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-login-secret:1}}'
+  InvokePermissionSsm:
+    Type: AWS::Lambda::Permission
+    DependsOn: [ServerlessApi, LambdaSsm]
+    Properties:
+        FunctionName: !Sub ${TargetEnvr}-ssm
         Action: lambda:InvokeFunction
         Principal: apigateway.amazonaws.com
         SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
