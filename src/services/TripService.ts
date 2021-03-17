@@ -13,7 +13,15 @@ export class TripService {
   private readonly dbService!: DbService;
 
   public async getTrips(): Promise<DbTrip[]> {
-    return await this.dbService.query<DbTrip>(SadalsuudEntity.trip);
+    const trips: DbTrip[] = await this.dbService.query<DbTrip>(
+      SadalsuudEntity.trip
+    );
+    const res: DbTrip[] = [];
+    trips.forEach((trip: DbTrip) => {
+      if (new Date(trip.expiredDate).getTime() > Date.now()) res.push(trip);
+    });
+
+    return res;
   }
 
   public async getTrip(creationId: string): Promise<DbTrip> {
