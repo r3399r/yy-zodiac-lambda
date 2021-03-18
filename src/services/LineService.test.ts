@@ -19,7 +19,7 @@ describe('LineService', () => {
   it('pushMessage should work', async () => {
     mockClient.pushMessage = jest.fn();
 
-    await lineService.pushMessage('to', 'text');
+    await lineService.pushMessage('to', ['text1', 'text2']);
     expect(mockClient.pushMessage).toBeCalledTimes(1);
   });
 });

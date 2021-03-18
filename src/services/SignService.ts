@@ -36,17 +36,17 @@ export class SignService {
 
     // if user does not exist or role does not exist in user, return
     if (user === null || user.role === undefined) {
-      await this.lineService.pushMessage(
-        sign.lineUserId,
-        '您好，為了讓活動順利進行，我們會先詢問孩子的一些基本資訊，請您提供方便回覆訊息的時間，讓我們能夠聯繫您，做一些簡短的認識'
-      );
+      await this.lineService.pushMessage(sign.lineUserId, [
+        '您好，我們收到您的報名申請，但由於我們的資料庫中並未有您的資料，故報名尚未成功。',
+        '為了讓活動順利進行，我們會先詢問一些基本資訊，請您提供方便回覆訊息的時間，讓我們能夠聯繫您',
+      ]);
 
-      return '請開啟LINE回覆星遊的官方帳號';
+      return '報名尚未成功。資料庫並未有您的資料，請開啟LINE回覆星遊的官方帳號';
     }
 
     // if role is STAR_RAIN, return
     if (user.role === Role.STAR_RAIN)
-      return '哈囉星雨的哥姐，此活動僅開放給星兒或家長報名。若你想參加活動或你並不是星雨的成員，請洽星遊的LINE官方帳號，謝謝';
+      return '報名失敗。此活動僅開放給星兒或家長報名，資料庫顯示您的身份為「星雨哥姐」。若您想參加活動或資料設定有誤，請洽星遊的LINE官方帳號，謝謝';
 
     // find trip-user pair
     const existentSign: DbSign[] = await this.dbService.query<DbSign>(
@@ -65,7 +65,8 @@ export class SignService {
       );
 
     // if sign exists, return
-    if (existentSign.length === 1) return '已經報名過囉';
+    if (existentSign.length === 1)
+      return '已經報名成功過囉，將於截止後進行抽籤';
 
     // add trip-user-pair into sign db
     const creationId: string = generateId();
@@ -76,6 +77,6 @@ export class SignService {
       userCreationId: user.creationId,
     });
 
-    return '報名成功';
+    return '報名成功，將於截止後進行抽籤';
   }
 }

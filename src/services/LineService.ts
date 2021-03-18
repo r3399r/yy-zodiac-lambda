@@ -13,7 +13,10 @@ export class LineService {
     return { type: 'text', text };
   }
 
-  public async pushMessage(to: string, text: string): Promise<void> {
-    await this.client.pushMessage(to, this.textMessage(text));
+  public async pushMessage(to: string, text: string[]): Promise<void> {
+    const messages: TextMessage[] = text.map((val: string) =>
+      this.textMessage(val)
+    );
+    await this.client.pushMessage(to, messages);
   }
 }

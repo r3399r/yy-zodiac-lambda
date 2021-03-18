@@ -55,7 +55,7 @@ describe('SignService', () => {
       tripCreationId: dummySign.tripCreationId,
       lineUserId: dummyUser.lineUserId,
     });
-    expect(res).toBe('報名成功');
+    expect(res).toBe('報名成功，將於截止後進行抽籤');
   });
 
   it('addSign should work for duplicate sign', async () => {
@@ -66,7 +66,7 @@ describe('SignService', () => {
       tripCreationId: dummySign.tripCreationId,
       lineUserId: dummyUser.lineUserId,
     });
-    expect(res).toBe('已經報名過囉');
+    expect(res).toBe('已經報名成功過囉，將於截止後進行抽籤');
   });
 
   it('addSign should work for new user', async () => {
@@ -78,7 +78,9 @@ describe('SignService', () => {
       tripCreationId: dummySign.tripCreationId,
       lineUserId: dummyUser.lineUserId,
     });
-    expect(res).toBe('請開啟LINE回覆星遊的官方帳號');
+    expect(res).toBe(
+      '報名尚未成功。資料庫並未有您的資料，請開啟LINE回覆星遊的官方帳號'
+    );
     expect(mockUserService.addEmptySadalsuudUser).toBeCalledTimes(1);
     expect(mockLineService.pushMessage).toBeCalledTimes(1);
   });
@@ -100,7 +102,7 @@ describe('SignService', () => {
       lineUserId: dummyUser.lineUserId,
     });
     expect(res).toBe(
-      '哈囉星雨的哥姐，此活動僅開放給星兒或家長報名。若你想參加活動或你並不是星雨的成員，請洽星遊的LINE官方帳號，謝謝'
+      '報名失敗。此活動僅開放給星兒或家長報名，資料庫顯示您的身份為「星雨哥姐」。若您想參加活動或資料設定有誤，請洽星遊的LINE官方帳號，謝謝'
     );
   });
 
