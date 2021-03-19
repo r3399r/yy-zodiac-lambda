@@ -1,5 +1,10 @@
 import { DbKey } from 'src/model/DbKey';
 
+export enum NeedFamilyAccompany {
+  YES = 'yes',
+  OPTIONAL = 'optional',
+}
+
 export interface Trip {
   type: string; // official
   status: string; // review status
@@ -8,10 +13,12 @@ export interface Trip {
   endDate: string; // ISO string
   place: string;
   meetPlace: string;
+  dismissPlace: string;
+
   fee: string;
   thingsToBring?: string;
   participants: string[];
-  needFamilyAccompany: string; // yes, no, other
+  needFamilyAccompany: NeedFamilyAccompany;
   quota: number;
   shortDesc: string;
   detailedDesc: string;

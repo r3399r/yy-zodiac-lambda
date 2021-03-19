@@ -1,6 +1,6 @@
 import { bindings } from 'src/bindings';
 import { SadalsuudEntity } from 'src/model/DbKey';
-import { DbTrip, Trip } from 'src/model/sadalsuud/Trip';
+import { DbTrip, NeedFamilyAccompany, Trip } from 'src/model/sadalsuud/Trip';
 import { DbService } from './DbService';
 import { TripService } from './TripService';
 
@@ -26,9 +26,10 @@ describe('TripService', () => {
         ).toISOString(),
         place: 'here',
         meetPlace: 'there',
+        dismissPlace: 'there2',
         fee: '$10',
         participants: [],
-        needFamilyAccompany: 'yes',
+        needFamilyAccompany: NeedFamilyAccompany.YES,
         quota: 2,
         shortDesc: 'short',
         detailedDesc: 'detailed',
@@ -47,9 +48,10 @@ describe('TripService', () => {
         ).toISOString(),
         place: 'here',
         meetPlace: 'there',
+        dismissPlace: 'there3',
         fee: '$10',
         participants: [],
-        needFamilyAccompany: 'yes',
+        needFamilyAccompany: NeedFamilyAccompany.YES,
         quota: 2,
         shortDesc: 'short',
         detailedDesc: 'detailed',

@@ -1,7 +1,7 @@
 import { bindings } from 'src/bindings';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbSign } from 'src/model/sadalsuud/Sign';
-import { DbUser, Role } from 'src/model/sadalsuud/User';
+import { DbUser, FAKE_CREATIONID, Role } from 'src/model/sadalsuud/User';
 import { DbService } from './DbService';
 import { LineService } from './LineService';
 import { SignService } from './SignService';
@@ -17,6 +17,7 @@ describe('SignService', () => {
   let mockLineService: any;
   let dummyUser: DbUser;
   let dummySign: DbSign;
+  let fakeUser: DbUser;
 
   beforeAll(() => {
     dummyUser = {
@@ -32,6 +33,12 @@ describe('SignService', () => {
       creationId: 'testId',
       tripCreationId: 'tripId',
       userCreationId: 'userId',
+    };
+    fakeUser = {
+      projectEntity: SadalsuudEntity.user,
+      creationId: FAKE_CREATIONID,
+      lineUserId: 'abc',
+      role: Role.UNKNOWN,
     };
   });
 
@@ -70,7 +77,7 @@ describe('SignService', () => {
   });
 
   it('addSign should work for new user', async () => {
-    mockUserService.getUser = jest.fn(() => null);
+    mockUserService.getUser = jest.fn(() => fakeUser);
     mockUserService.addEmptySadalsuudUser = jest.fn();
     mockLineService.pushMessage = jest.fn();
 
@@ -102,7 +109,7 @@ describe('SignService', () => {
       lineUserId: dummyUser.lineUserId,
     });
     expect(res).toBe(
-      '報名失敗。此活動僅開放給星兒或家長報名，資料庫顯示您的身份為「星雨哥姐」。若您想參加活動或資料設定有誤，請洽星遊的LINE官方帳號，謝謝'
+      '報名失敗。此活動僅開放給星兒或家人報名，資料庫顯示您的身份為「星雨哥姐」。若您想參加活動或資料設定有誤，請洽星遊的LINE官方帳號，謝謝'
     );
   });
 
@@ -118,5 +125,16 @@ describe('SignService', () => {
     ).rejects.toThrow(
       'Get multiple signs with same tripCreationId and userCreationId'
     );
+  });
+
+  it('addSign should fail with null user', async () => {
+    mockUserService.getUser = jest.fn(() => null);
+
+    await expect(
+      signService.addSign({
+        tripCreationId: dummySign.tripCreationId,
+        lineUserId: dummyUser.lineUserId,
+      })
+    ).rejects.toThrow('getUser should not return null');
   });
 });

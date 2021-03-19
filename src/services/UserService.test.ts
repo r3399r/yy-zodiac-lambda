@@ -1,6 +1,6 @@
 import { bindings } from 'src/bindings';
 import { SadalsuudEntity } from 'src/model/DbKey';
-import { Role, UserCommon } from 'src/model/sadalsuud/User';
+import { FAKE_CREATIONID, Role, UserCommon } from 'src/model/sadalsuud/User';
 import { DbUser, User } from 'src/model/User';
 import { DbService } from './DbService';
 import { UserService } from './UserService';
@@ -13,6 +13,7 @@ describe('UserService', () => {
   let mockDbService: any;
   let dummyUser: User;
   let dummyDbUser: DbUser;
+  let fakeUser: DbUser;
 
   beforeAll(() => {
     dummyUser = {
@@ -26,6 +27,12 @@ describe('UserService', () => {
       projectEntity: SadalsuudEntity.user,
       creationId: 'test',
       ...dummyUser,
+    };
+    fakeUser = {
+      projectEntity: SadalsuudEntity.user,
+      creationId: FAKE_CREATIONID,
+      lineUserId: 'abc',
+      role: Role.UNKNOWN,
     };
   });
 
@@ -48,11 +55,21 @@ describe('UserService', () => {
     expect(res).toStrictEqual(dummyDbUser);
   });
 
-  it('getUser should return null', async () => {
+  it('getUser should return unknonw user in Sadalsuud project', async () => {
     mockDbService.query = jest.fn(() => []);
 
     const res: DbUser | null = await userService.getUser(
       SadalsuudEntity.user,
+      'abc'
+    );
+    expect(res).toStrictEqual(fakeUser);
+  });
+
+  it('getUser should return null', async () => {
+    mockDbService.query = jest.fn(() => []);
+
+    const res: DbUser | null = await userService.getUser(
+      SadalsuudEntity.trip,
       'abc'
     );
     expect(res).toBeNull();

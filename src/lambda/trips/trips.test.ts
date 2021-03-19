@@ -1,7 +1,7 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { SadalsuudEntity } from 'src/model/DbKey';
-import { DbTrip } from 'src/model/sadalsuud/Trip';
+import { DbTrip, NeedFamilyAccompany } from 'src/model/sadalsuud/Trip';
 import { TripService } from 'src/services/TripService';
 import { successOutput } from 'src/util/LambdaOutput';
 import { trips } from './trips';
@@ -26,9 +26,10 @@ describe('trips', () => {
       endDate: '2020-02-28T20:00:00.000Z',
       place: 'here',
       meetPlace: 'there',
+      dismissPlace: 'there2',
       fee: '$10',
       participants: [],
-      needFamilyAccompany: 'yes',
+      needFamilyAccompany: NeedFamilyAccompany.YES,
       quota: 2,
       shortDesc: 'short',
       detailedDesc: 'detailed',
