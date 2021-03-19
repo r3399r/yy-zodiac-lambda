@@ -34,8 +34,6 @@ export class TripService {
   public async addTrip(trip: Trip): Promise<void> {
     const creationId: string = generateId();
 
-    // add trips to user
-
     await this.dbService.putItem<DbTrip>({
       projectEntity: SadalsuudEntity.trip,
       creationId,

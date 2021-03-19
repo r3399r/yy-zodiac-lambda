@@ -25,7 +25,7 @@ type StarRainUser = UserCommon & {
 
 type FamilyUser = UserCommon & {
   role: Role.FAMILY;
-  stars: string[];
+  stars?: string[]; // starCreationId
 };
 
 type StarUser = UserCommon & {

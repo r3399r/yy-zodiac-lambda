@@ -5,6 +5,7 @@ export enum SadalsuudEntity {
   sign = 'sadalsuud-sign',
   target = 'sadalsuud-target',
   user = 'sadalsuud-user',
+  star = 'sadalsuud-star',
 }
 
 export interface DbKey {
