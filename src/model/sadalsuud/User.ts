@@ -15,8 +15,6 @@ export interface UserCommon {
   lineUserId: string;
   name?: string;
   phone?: string;
-  birthday?: string;
-  idCard?: string;
 }
 
 type StarRainUser = UserCommon & {
