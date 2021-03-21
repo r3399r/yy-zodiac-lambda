@@ -91,7 +91,7 @@ describe('TripService', () => {
   it('getTrip should work', async () => {
     mockDbService.getItem = jest.fn(() => dummyDbTrips[0]);
 
-    const res: DbTrip = await tripService.getTrip('abc');
+    const res: DbTrip | null = await tripService.getTrip('abc');
     expect(res).toStrictEqual(dummyDbTrips[0]);
   });
 

@@ -44,7 +44,7 @@ describe('DbService', () => {
       Item: Converter.marshall(dummyItem),
     });
 
-    const res: DummyType = await dbService.getItem<DummyType>({
+    const res: DummyType | null = await dbService.getItem<DummyType>({
       projectEntity: SadalsuudEntity.trip,
       creationId: 'testId',
     });
@@ -55,11 +55,11 @@ describe('DbService', () => {
   it('getItem should return empty array', async () => {
     mockDynamoDb.getItem = AWSMockUtil.mockRequest<GetItemOutput>({});
 
-    const res: DummyType = await dbService.getItem<DummyType>({
+    const res: DummyType | null = await dbService.getItem<DummyType>({
       projectEntity: SadalsuudEntity.trip,
       creationId: 'testId',
     });
-    expect(res).toStrictEqual({});
+    expect(res).toBeNull();
     expect(mockDynamoDb.getItem).toBeCalledTimes(1);
   });
 

@@ -24,7 +24,7 @@ export class TripService {
     return res;
   }
 
-  public async getTrip(creationId: string): Promise<DbTrip> {
+  public async getTrip(creationId: string): Promise<DbTrip | null> {
     return await this.dbService.getItem<DbTrip>({
       projectEntity: SadalsuudEntity.trip,
       creationId,

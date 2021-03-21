@@ -20,6 +20,7 @@ export interface UserCommon {
 type StarRainUser = UserCommon & {
   role: Role.STAR_RAIN;
   joinSession: number;
+  idCard?: string;
   trips: string[];
 };
 
@@ -31,6 +32,7 @@ type FamilyUser = UserCommon & {
 type StarUser = UserCommon & {
   role: Role.STAR;
   trips: string[];
+  idCard?: string;
 };
 
 type UnknownUser = UserCommon & {

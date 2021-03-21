@@ -38,7 +38,7 @@ export class DbService {
   public async getItem<T>(
     key: DbKey,
     projectionExpression?: string
-  ): Promise<T> {
+  ): Promise<T | null> {
     const params: GetItemInput = {
       TableName: this.tableName,
       Key: Converter.marshall(key),
@@ -46,7 +46,7 @@ export class DbService {
     };
     const res: GetItemOutput = await this.dynamoDb.getItem(params).promise();
 
-    return <T>(res.Item === undefined ? {} : Converter.unmarshall(res.Item));
+    return res.Item === undefined ? null : <T>Converter.unmarshall(res.Item);
   }
 
   public async query<T>(
