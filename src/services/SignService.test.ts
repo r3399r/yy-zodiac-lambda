@@ -1,7 +1,7 @@
 import { bindings } from 'src/bindings';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbSign } from 'src/model/sadalsuud/Sign';
-import { DbUser, FAKE_CREATIONID, Role } from 'src/model/sadalsuud/User';
+import { DbUser, Role } from 'src/model/sadalsuud/User';
 import { DbService } from './DbService';
 import { LineService } from './LineService';
 import { SignService } from './SignService';
@@ -17,7 +17,6 @@ describe('SignService', () => {
   let mockLineService: any;
   let dummyUser: DbUser;
   let dummySign: DbSign;
-  let fakeUser: DbUser;
 
   beforeAll(() => {
     dummyUser = {
@@ -26,7 +25,8 @@ describe('SignService', () => {
       lineUserId: 'testLineId',
       role: Role.FAMILY,
       phone: 'phone',
-      stars: [],
+      status: 'testStatus',
+      name: 'testName',
     };
     dummySign = {
       projectEntity: SadalsuudEntity.sign,
@@ -34,18 +34,12 @@ describe('SignService', () => {
       tripCreationId: 'tripId',
       userCreationId: 'userId',
     };
-    fakeUser = {
-      projectEntity: SadalsuudEntity.user,
-      creationId: FAKE_CREATIONID,
-      lineUserId: 'abc',
-      role: Role.UNKNOWN,
-    };
   });
 
   beforeEach(() => {
     mockDbService = {};
     mockUserService = {};
-    mockLineService = {};
+    mockLineService = { pushMessage: jest.fn() };
     bindings.rebind<DbService>(DbService).toConstantValue(mockDbService);
     bindings.rebind<UserService>(UserService).toConstantValue(mockUserService);
     bindings.rebind<LineService>(LineService).toConstantValue(mockLineService);
@@ -77,9 +71,7 @@ describe('SignService', () => {
   });
 
   it('addSign should work for new user', async () => {
-    mockUserService.getUser = jest.fn(() => fakeUser);
-    mockUserService.addEmptySadalsuudUser = jest.fn();
-    mockLineService.pushMessage = jest.fn();
+    mockUserService.getUser = jest.fn(() => null);
 
     const res: string = await signService.addSign({
       tripCreationId: dummySign.tripCreationId,
@@ -88,7 +80,6 @@ describe('SignService', () => {
     expect(res).toBe(
       '報名尚未成功。資料庫並未有您的資料，請開啟LINE回覆星遊的官方帳號'
     );
-    expect(mockUserService.addEmptySadalsuudUser).toBeCalledTimes(1);
     expect(mockLineService.pushMessage).toBeCalledTimes(1);
   });
 
@@ -100,7 +91,8 @@ describe('SignService', () => {
       role: Role.STAR_RAIN,
       joinSession: 30,
       phone: 'testPhone',
-      trips: [],
+      name: 'testName2',
+      status: 'testStatus',
     };
     mockUserService.getUser = jest.fn(() => starRainMember);
 
@@ -125,16 +117,5 @@ describe('SignService', () => {
     ).rejects.toThrow(
       'Get multiple signs with same tripCreationId and userCreationId'
     );
-  });
-
-  it('addSign should fail with null user', async () => {
-    mockUserService.getUser = jest.fn(() => null);
-
-    await expect(
-      signService.addSign({
-        tripCreationId: dummySign.tripCreationId,
-        lineUserId: dummyUser.lineUserId,
-      })
-    ).rejects.toThrow('getUser should not return null');
   });
 });

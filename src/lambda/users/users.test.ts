@@ -24,7 +24,8 @@ describe('users', () => {
       role: Role.STAR_RAIN,
       joinSession: 30,
       phone: 'testPhone',
-      trips: [],
+      name: 'testName',
+      status: 'testStatus',
     };
   });
 

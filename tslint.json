@@ -53,7 +53,7 @@
     // not using backbone
     "no-backbone-get-set-outside-model": false,
     // here to easily disable during development
-    "no-console": true,
+    "no-console": [true, "log"],
     // deprecated
     "no-function-constructor-with-string-args": false,
     // allow packages

@@ -11,7 +11,7 @@ export async function users(
 ): Promise<LambdaOutput> {
   const userService: UserService = bindings.get<UserService>(UserService);
 
-  let res: DbUser | null | void;
+  let res: DbUser | null;
 
   switch (event.httpMethod) {
     case 'GET':

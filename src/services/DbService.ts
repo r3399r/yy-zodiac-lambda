@@ -75,12 +75,8 @@ export class DbService {
 
     const res: QueryOutput = await this.dynamoDb.query(params).promise();
 
-    return <T[]>(
-      (res.Items === undefined
-        ? []
-        : res.Items.map((item: AttributeMap): { [key: string]: any } =>
-            Converter.unmarshall(item)
-          ))
-    );
+    return res.Items === undefined
+      ? []
+      : res.Items.map((item: AttributeMap): T => <T>Converter.unmarshall(item));
   }
 }

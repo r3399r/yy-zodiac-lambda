@@ -1,6 +1,6 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
-import { Star } from 'src/model/sadalsuud/Star';
+import { DbStar, Star } from 'src/model/sadalsuud/Star';
 import { StarService } from 'src/services/StarService';
 import {
   errorOutput,
@@ -16,7 +16,7 @@ export async function stars(
   try {
     const starService: StarService = bindings.get<StarService>(StarService);
 
-    let res: null | void;
+    let res: DbStar;
 
     switch (event.httpMethod) {
       case 'POST':

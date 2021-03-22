@@ -11,7 +11,7 @@ export async function sign(
 ): Promise<LambdaOutput> {
   const signService: SignService = bindings.get<SignService>(SignService);
 
-  let res: string | void;
+  let res: string;
 
   switch (event.httpMethod) {
     case 'POST':

@@ -1,11 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { Entity, SadalsuudEntity } from 'src/model/DbKey';
-import {
-  DbUserCommon,
-  FAKE_CREATIONID,
-  Role,
-  UserCommon,
-} from 'src/model/sadalsuud/User';
+import { Entity } from 'src/model/DbKey';
 import { DbUser, User } from 'src/model/User';
 import { generateId } from 'src/util/generateId';
 import { DbService } from './DbService';
@@ -35,13 +29,7 @@ export class UserService {
     if (userResult.length > 1)
       throw new Error('Get multiple users with same lineUserId');
     if (userResult.length === 0) {
-      if (projectEntity === SadalsuudEntity.user)
-        return {
-          projectEntity,
-          creationId: FAKE_CREATIONID,
-          lineUserId,
-          role: Role.UNKNOWN,
-        };
+      console.info('user not found:', lineUserId);
 
       return null;
     }
@@ -49,23 +37,15 @@ export class UserService {
     return userResult[0];
   }
 
-  public async addEmptySadalsuudUser(user: UserCommon): Promise<void> {
+  public async addUser(projectEntity: Entity, user: User): Promise<DbUser> {
     const creationId: string = generateId();
-
-    await this.dbService.putItem<DbUserCommon>({
-      projectEntity: SadalsuudEntity.user,
-      creationId,
-      ...user,
-    });
-  }
-
-  public async addUser(projectEntity: Entity, user: User): Promise<void> {
-    const creationId: string = generateId();
-
-    await this.dbService.putItem<DbUser>({
+    const dbUser: DbUser = {
       projectEntity,
       creationId,
       ...user,
-    });
+    };
+    await this.dbService.putItem<DbUser>(dbUser);
+
+    return dbUser;
   }
 }

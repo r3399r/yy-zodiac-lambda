@@ -4,39 +4,33 @@ export enum Role {
   STAR_RAIN = 'starRain',
   FAMILY = 'family',
   STAR = 'star',
-  UNKNOWN = 'unknown',
+  VOLUNTEER = 'volunteer',
 }
 
-export const FAKE_CREATIONID = 'fake';
-
-export type User = StarRainUser | FamilyUser | StarUser | UnknownUser;
+export type User = StarRainUser | FamilyUser | StarUser | VolunteerUser;
 
 export interface UserCommon {
   lineUserId: string;
-  name?: string;
-  phone?: string;
+  name: string;
+  phone: string;
+  status: string;
 }
 
 type StarRainUser = UserCommon & {
   role: Role.STAR_RAIN;
   joinSession: number;
-  idCard?: string;
-  trips: string[];
 };
 
 type FamilyUser = UserCommon & {
   role: Role.FAMILY;
-  stars?: string[]; // starCreationId
 };
 
 type StarUser = UserCommon & {
   role: Role.STAR;
-  trips: string[];
-  idCard?: string;
 };
 
-type UnknownUser = UserCommon & {
-  role: Role.UNKNOWN;
+type VolunteerUser = UserCommon & {
+  role: Role.VOLUNTEER;
 };
 
 export type DbUserCommon = UserCommon & DbKey;

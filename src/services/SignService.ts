@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbSign, InputSign } from 'src/model/sadalsuud/Sign';
-import { DbUser, FAKE_CREATIONID, Role } from 'src/model/sadalsuud/User';
+import { DbUser, Role } from 'src/model/sadalsuud/User';
 import { generateId } from 'src/util/generateId';
 import { DbService } from './DbService';
 import { LineService } from './LineService';
@@ -22,22 +22,14 @@ export class SignService {
   private readonly lineService!: LineService;
 
   public async addSign(sign: InputSign): Promise<string> {
-    // find linsUserId in line-user of db
+    // find linsUserId in sadalsuud-user of db
     const user: DbUser | null = await this.userService.getUser(
       SadalsuudEntity.user,
       sign.lineUserId
     );
 
-    if (user === null) throw new Error('getUser should not return null');
-
-    // if user does not exist, add user
-    if (user.creationId === FAKE_CREATIONID)
-      await this.userService.addEmptySadalsuudUser({
-        lineUserId: sign.lineUserId,
-      });
-
-    // if user does not exist or role does not exist in user, return
-    if (user.role === undefined || user.role === Role.UNKNOWN) {
+    // if user does not exist, return
+    if (user === null) {
       await this.lineService.pushMessage(sign.lineUserId, [
         '您好，我們收到您的報名申請，但由於我們的資料庫中並未有您的資料，故報名尚未成功。',
         '請您回覆以下基本資訊，謝謝您\n1. 姓名\n2. 身份(星兒家人或星雨團員或其他)\n3. 聯絡方式(手機)',
@@ -46,8 +38,8 @@ export class SignService {
       return '報名尚未成功。資料庫並未有您的資料，請開啟LINE回覆星遊的官方帳號';
     }
 
-    // if role is STAR_RAIN, return
-    if (user.role === Role.STAR_RAIN)
+    // if role is not FAMILY and STAR, return
+    if (user.role !== Role.FAMILY && user.role !== Role.STAR)
       return '報名失敗。此活動僅開放給星兒或家人報名，資料庫顯示您的身份為「星雨哥姐」。若您想參加活動或資料設定有誤，請洽星遊的LINE官方帳號，謝謝';
 
     // find trip-user pair

@@ -10,68 +10,31 @@ import { TripService } from './TripService';
 describe('TripService', () => {
   let tripService: TripService;
   let mockDbService: any;
-  let dummyTrips: Trip[];
-  let dummyDbTrips: DbTrip[];
+  let dummyTrip: Trip;
+  let dummyDbTrip: DbTrip;
 
   beforeAll(() => {
-    dummyTrips = [
-      {
-        type: 'official',
-        status: 'pass',
-        startDate: new Date(
-          new Date().valueOf() - 1000 * 3600 * 24
-        ).toISOString(),
-        endDate: new Date(
-          new Date().valueOf() - 1000 * 3600 * 24
-        ).toISOString(),
-        place: 'here',
-        meetPlace: 'there',
-        dismissPlace: 'there2',
-        fee: '$10',
-        participants: [],
-        needFamilyAccompany: NeedFamilyAccompany.YES,
-        quota: 2,
-        shortDesc: 'short',
-        detailedDesc: 'detailed',
-        expiredDate: new Date(
-          new Date().valueOf() - 1000 * 3600 * 24
-        ).toISOString(),
-      },
-      {
-        type: 'official',
-        status: 'pass',
-        startDate: new Date(
-          new Date().valueOf() + 1000 * 3600 * 24
-        ).toISOString(),
-        endDate: new Date(
-          new Date().valueOf() + 1000 * 3600 * 24
-        ).toISOString(),
-        place: 'here',
-        meetPlace: 'there',
-        dismissPlace: 'there3',
-        fee: '$10',
-        participants: [],
-        needFamilyAccompany: NeedFamilyAccompany.YES,
-        quota: 2,
-        shortDesc: 'short',
-        detailedDesc: 'detailed',
-        expiredDate: new Date(
-          new Date().valueOf() + 1000 * 3600 * 24
-        ).toISOString(),
-      },
-    ];
-    dummyDbTrips = [
-      {
-        projectEntity: SadalsuudEntity.trip,
-        creationId: 'testId',
-        ...dummyTrips[0],
-      },
-      {
-        projectEntity: SadalsuudEntity.trip,
-        creationId: 'testId',
-        ...dummyTrips[1],
-      },
-    ];
+    dummyTrip = {
+      type: 'official',
+      status: 'pass',
+      startDate: '2000-01-01T00:00:00.000Z',
+      endDate: '2000-01-01T00:00:00.000Z',
+      place: 'here',
+      meetPlace: 'there',
+      dismissPlace: 'there2',
+      fee: '$10',
+      participants: [],
+      needFamilyAccompany: NeedFamilyAccompany.YES,
+      quota: 2,
+      shortDesc: 'short',
+      detailedDesc: 'detailed',
+      expiredDate: '2000-01-01T00:00:00.000Z',
+    };
+    dummyDbTrip = {
+      projectEntity: SadalsuudEntity.trip,
+      creationId: 'testId',
+      ...dummyTrip,
+    };
   });
 
   beforeEach(() => {
@@ -82,23 +45,23 @@ describe('TripService', () => {
   });
 
   it('getTrips should work', async () => {
-    mockDbService.query = jest.fn(() => dummyDbTrips);
+    mockDbService.query = jest.fn(() => [dummyDbTrip]);
 
     const res: DbTrip[] = await tripService.getTrips();
-    expect(res).toStrictEqual([dummyDbTrips[1]]);
+    expect(res).toStrictEqual([dummyDbTrip]);
   });
 
   it('getTrip should work', async () => {
-    mockDbService.getItem = jest.fn(() => dummyDbTrips[0]);
+    mockDbService.getItem = jest.fn(() => dummyDbTrip);
 
     const res: DbTrip | null = await tripService.getTrip('abc');
-    expect(res).toStrictEqual(dummyDbTrips[0]);
+    expect(res).toStrictEqual(dummyDbTrip);
   });
 
   it('addTrip should work', async () => {
     mockDbService.putItem = jest.fn();
 
-    await tripService.addTrip(dummyTrips[0]);
+    await tripService.addTrip(dummyTrip);
     expect(mockDbService.putItem).toBeCalledTimes(1);
   });
 });

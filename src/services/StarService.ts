@@ -12,13 +12,16 @@ export class StarService {
   @inject(DbService)
   private readonly dbService!: DbService;
 
-  public async addStar(star: Star): Promise<void> {
+  public async addStar(star: Star): Promise<DbStar> {
     const creationId: string = generateId();
-
-    await this.dbService.putItem<DbStar>({
+    const dbStar: DbStar = {
       projectEntity: SadalsuudEntity.star,
       creationId,
       ...star,
-    });
+    };
+
+    await this.dbService.putItem<DbStar>(dbStar);
+
+    return dbStar;
   }
 }

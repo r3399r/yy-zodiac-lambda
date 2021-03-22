@@ -13,15 +13,7 @@ export class TripService {
   private readonly dbService!: DbService;
 
   public async getTrips(): Promise<DbTrip[]> {
-    const trips: DbTrip[] = await this.dbService.query<DbTrip>(
-      SadalsuudEntity.trip
-    );
-    const res: DbTrip[] = [];
-    trips.forEach((trip: DbTrip) => {
-      if (new Date(trip.expiredDate).getTime() > Date.now()) res.push(trip);
-    });
-
-    return res;
+    return await this.dbService.query<DbTrip>(SadalsuudEntity.trip);
   }
 
   public async getTrip(creationId: string): Promise<DbTrip | null> {
@@ -31,13 +23,16 @@ export class TripService {
     });
   }
 
-  public async addTrip(trip: Trip): Promise<void> {
+  public async addTrip(trip: Trip): Promise<DbTrip> {
     const creationId: string = generateId();
-
-    await this.dbService.putItem<DbTrip>({
+    const dbTrip: DbTrip = {
       projectEntity: SadalsuudEntity.trip,
       creationId,
       ...trip,
-    });
+    };
+
+    await this.dbService.putItem<DbTrip>(dbTrip);
+
+    return dbTrip;
   }
 }

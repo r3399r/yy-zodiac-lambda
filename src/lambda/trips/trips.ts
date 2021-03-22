@@ -1,4 +1,3 @@
-import { PutItemOutput } from 'aws-sdk/clients/dynamodb';
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { DbTrip, Trip } from 'src/model/sadalsuud/Trip';
@@ -12,7 +11,7 @@ export async function trips(
 ): Promise<LambdaOutput> {
   const tripService: TripService = bindings.get<TripService>(TripService);
 
-  let res: DbTrip | DbTrip[] | PutItemOutput | void | null;
+  let res: DbTrip | DbTrip[] | null;
 
   switch (event.httpMethod) {
     case 'GET':
