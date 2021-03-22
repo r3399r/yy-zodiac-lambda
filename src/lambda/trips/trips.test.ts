@@ -3,7 +3,7 @@ import { LambdaContext } from 'src/lambda/LambdaContext';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbTrip, NeedFamilyAccompany } from 'src/model/sadalsuud/Trip';
 import { TripService } from 'src/services/TripService';
-import { successOutput } from 'src/util/LambdaOutput';
+import { errorOutput, successOutput } from 'src/util/LambdaOutput';
 import { trips } from './trips';
 import { TripsEvent } from './TripsEvent';
 
@@ -89,7 +89,9 @@ describe('trips', () => {
       body: null,
       pathParameters: null,
     };
-    await expect(trips(event, lambdaContext)).rejects.toThrow('null body');
+    await expect(trips(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('null body'))
+    );
   });
 
   it('should fail with unknown method', async () => {
@@ -98,8 +100,8 @@ describe('trips', () => {
       body: null,
       pathParameters: null,
     };
-    await expect(trips(event, lambdaContext)).rejects.toThrow(
-      'unknown http method'
+    await expect(trips(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('unknown http method'))
     );
   });
 });

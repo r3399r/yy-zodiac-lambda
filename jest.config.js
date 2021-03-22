@@ -10,7 +10,10 @@ module.exports = {
    * constructor functions of external classes will routinely be mocked, and
    * therefore not covered in our fully automated tests.
    */
-  coveragePathIgnorePatterns: ['<rootDir>/src/bindings.ts'],
+  coveragePathIgnorePatterns: [
+    '<rootDir>/src/bindings.ts',
+    '<rootDir>/src/validator/*'
+  ],
   coverageReporters: ['json', 'lcov', 'text', 'clover', 'cobertura', 'html'],
   coverageThreshold: {
     global: {

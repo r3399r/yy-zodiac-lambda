@@ -31,39 +31,45 @@ describe('UserService', () => {
   });
 
   beforeEach(() => {
-    mockDbService = {};
+    mockDbService = { putItem: jest.fn(), getItem: jest.fn(() => dummyDbUser) };
     bindings.rebind<DbService>(DbService).toConstantValue(mockDbService);
-
-    mockDbService.putItem = jest.fn();
 
     userService = bindings.get<UserService>(UserService);
   });
 
-  it('getUser should work', async () => {
-    mockDbService.query = jest.fn(() => [dummyDbUser]);
-
-    const res: DbUser | null = await userService.getUser(
+  it('getUserById should work', async () => {
+    const res: DbUser | null = await userService.getUserById(
       SadalsuudEntity.user,
       'abc'
     );
     expect(res).toStrictEqual(dummyDbUser);
   });
 
-  it('getUser should return null', async () => {
+  it('getUserByLineId should work', async () => {
+    mockDbService.query = jest.fn(() => [dummyDbUser]);
+
+    const res: DbUser | null = await userService.getUserByLineId(
+      SadalsuudEntity.user,
+      'abc'
+    );
+    expect(res).toStrictEqual(dummyDbUser);
+  });
+
+  it('getUserByLineId should return null', async () => {
     mockDbService.query = jest.fn(() => []);
 
-    const res: DbUser | null = await userService.getUser(
+    const res: DbUser | null = await userService.getUserByLineId(
       SadalsuudEntity.trip,
       'abc'
     );
     expect(res).toBeNull();
   });
 
-  it('getUser should fail with abnormal result', async () => {
+  it('getUserByLineId should fail with abnormal result', async () => {
     mockDbService.query = jest.fn(() => [dummyDbUser, dummyDbUser]);
 
     await expect(
-      userService.getUser(SadalsuudEntity.user, 'abc')
+      userService.getUserByLineId(SadalsuudEntity.user, 'abc')
     ).rejects.toThrow('Get multiple users with same lineUserId');
   });
 

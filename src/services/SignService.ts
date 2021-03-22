@@ -23,7 +23,7 @@ export class SignService {
 
   public async addSign(sign: InputSign): Promise<string> {
     // find linsUserId in sadalsuud-user of db
-    const user: DbUser | null = await this.userService.getUser(
+    const user: DbUser | null = await this.userService.getUserByLineId(
       SadalsuudEntity.user,
       sign.lineUserId
     );

@@ -48,7 +48,7 @@ describe('SignService', () => {
   });
 
   it('addSign should work for first sign', async () => {
-    mockUserService.getUser = jest.fn(() => dummyUser);
+    mockUserService.getUserByLineId = jest.fn(() => dummyUser);
     mockDbService.query = jest.fn(() => []);
     mockDbService.putItem = jest.fn();
 
@@ -60,7 +60,7 @@ describe('SignService', () => {
   });
 
   it('addSign should work for duplicate sign', async () => {
-    mockUserService.getUser = jest.fn(() => dummyUser);
+    mockUserService.getUserByLineId = jest.fn(() => dummyUser);
     mockDbService.query = jest.fn(() => [dummySign]);
 
     const res: string = await signService.addSign({
@@ -71,7 +71,7 @@ describe('SignService', () => {
   });
 
   it('addSign should work for new user', async () => {
-    mockUserService.getUser = jest.fn(() => null);
+    mockUserService.getUserByLineId = jest.fn(() => null);
 
     const res: string = await signService.addSign({
       tripCreationId: dummySign.tripCreationId,
@@ -94,7 +94,7 @@ describe('SignService', () => {
       name: 'testName2',
       status: 'testStatus',
     };
-    mockUserService.getUser = jest.fn(() => starRainMember);
+    mockUserService.getUserByLineId = jest.fn(() => starRainMember);
 
     const res: string = await signService.addSign({
       tripCreationId: dummySign.tripCreationId,
@@ -106,7 +106,7 @@ describe('SignService', () => {
   });
 
   it('addSign should fail with abnormal result', async () => {
-    mockUserService.getUser = jest.fn(() => dummyUser);
+    mockUserService.getUserByLineId = jest.fn(() => dummyUser);
     mockDbService.query = jest.fn(() => [dummySign, dummySign]);
 
     await expect(

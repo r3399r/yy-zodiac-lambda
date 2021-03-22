@@ -12,7 +12,17 @@ export class UserService {
   @inject(DbService)
   private readonly dbService!: DbService;
 
-  public async getUser(
+  public async getUserById(
+    projectEntity: Entity,
+    creationId: string
+  ): Promise<DbUser | null> {
+    return await this.dbService.getItem<DbUser>({
+      projectEntity,
+      creationId,
+    });
+  }
+
+  public async getUserByLineId(
     projectEntity: Entity,
     lineUserId: string
   ): Promise<DbUser | null> {

@@ -9,6 +9,7 @@ import { SsmService } from 'src/services/SsmService';
 import { StarService } from 'src/services/StarService';
 import { TripService } from 'src/services/TripService';
 import { UserService } from 'src/services/UserService';
+import { TripValidator } from 'src/validator/TripValidator';
 
 const container: Container = new Container();
 
@@ -27,6 +28,9 @@ container.bind<Client>(Client).toDynamicValue(
       channelSecret: String(process.env.CHANNEL_SECRET),
     })
 );
+
+// validator
+container.bind<TripValidator>(TripValidator).toSelf();
 
 // AWS
 container

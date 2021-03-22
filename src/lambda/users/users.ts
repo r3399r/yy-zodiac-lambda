@@ -23,7 +23,7 @@ export async function users(
       if (event.pathParameters.id === undefined)
         throw new Error('missing user id');
 
-      res = await userService.getUser(
+      res = await userService.getUserByLineId(
         event.queryStringParameters.entity,
         event.pathParameters.id
       );
