@@ -12,7 +12,7 @@ export async function trips(
 ): Promise<LambdaOutput> {
   const tripService: TripService = bindings.get<TripService>(TripService);
 
-  let res: DbTrip | DbTrip[] | PutItemOutput | void;
+  let res: DbTrip | DbTrip[] | PutItemOutput | void | null;
 
   switch (event.httpMethod) {
     case 'GET':

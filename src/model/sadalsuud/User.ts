@@ -20,17 +20,19 @@ export interface UserCommon {
 type StarRainUser = UserCommon & {
   role: Role.STAR_RAIN;
   joinSession: number;
+  idCard?: string;
   trips: string[];
 };
 
 type FamilyUser = UserCommon & {
   role: Role.FAMILY;
-  stars: string[];
+  stars?: string[]; // starCreationId
 };
 
 type StarUser = UserCommon & {
   role: Role.STAR;
   trips: string[];
+  idCard?: string;
 };
 
 type UnknownUser = UserCommon & {
