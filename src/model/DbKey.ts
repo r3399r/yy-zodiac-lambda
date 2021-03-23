@@ -6,6 +6,7 @@ export enum SadalsuudEntity {
   target = 'sadalsuud-target',
   user = 'sadalsuud-user',
   star = 'sadalsuud-star',
+  starPair = 'sadalsuud-starPair',
 }
 
 export interface DbKey {

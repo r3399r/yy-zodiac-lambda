@@ -7,6 +7,7 @@
 // tslint:disable: export-name
 export { sign } from 'src/lambda/sign/sign';
 export { ssm } from 'src/lambda/ssm/ssm';
+export { starPair } from 'src/lambda/starPair/starPair';
 export { stars } from 'src/lambda/stars/stars';
 export { trips } from 'src/lambda/trips/trips';
 export { users } from 'src/lambda/users/users';

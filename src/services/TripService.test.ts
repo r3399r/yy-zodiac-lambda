@@ -2,7 +2,7 @@ import { bindings } from 'src/bindings';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbTrip, NeedFamilyAccompany, Trip } from 'src/model/sadalsuud/Trip';
 import { Role, User } from 'src/model/sadalsuud/User';
-import { TripValidator } from 'src/validator/TripValidator';
+import { Validator } from 'src/Validator';
 import { DbService } from './DbService';
 import { TripService } from './TripService';
 import { UserService } from './UserService';
@@ -14,7 +14,7 @@ describe('TripService', () => {
   let tripService: TripService;
   let mockDbService: any;
   let mockUserService: any;
-  let mockTripValidator: any;
+  let mockValidator: any;
   let dummyTrip: Trip;
   let dummyDbTrip: DbTrip;
   let dummyUser: User;
@@ -55,13 +55,11 @@ describe('TripService', () => {
       putItem: jest.fn(),
     };
     mockUserService = {};
-    mockTripValidator = { validateTrip: jest.fn() };
+    mockValidator = { validateTrip: jest.fn() };
 
     bindings.rebind<DbService>(DbService).toConstantValue(mockDbService);
     bindings.rebind<UserService>(UserService).toConstantValue(mockUserService);
-    bindings
-      .rebind<TripValidator>(TripValidator)
-      .toConstantValue(mockTripValidator);
+    bindings.rebind<Validator>(Validator).toConstantValue(mockValidator);
 
     tripService = bindings.get<TripService>(TripService);
   });

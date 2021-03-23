@@ -12,7 +12,7 @@ module.exports = {
    */
   coveragePathIgnorePatterns: [
     '<rootDir>/src/bindings.ts',
-    '<rootDir>/src/validator/*'
+    '<rootDir>/src/Validator.ts'
   ],
   coverageReporters: ['json', 'lcov', 'text', 'clover', 'cobertura', 'html'],
   coverageThreshold: {

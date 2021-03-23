@@ -1,25 +1,25 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
-import { Star } from 'src/model/sadalsuud/Star';
+import { StarPair } from 'src/model/sadalsuud/StarPair';
 import { StarService } from 'src/services/StarService';
 import { errorOutput } from 'src/util/LambdaOutput';
-import { stars } from './stars';
-import { StarsEvent } from './StarsEvent';
+import { starPair } from './starPair';
+import { StarPairEvent } from './StarPairEvent';
 
 /**
- * Tests of the stars function.
+ * Tests of the starPair function.
  */
-describe('stars', () => {
-  let event: StarsEvent;
+describe('starPair', () => {
+  let event: StarPairEvent;
   let lambdaContext: LambdaContext | undefined;
   let mockStarService: any;
-  let dummyStar: Star;
+  let dummyStarPair: StarPair;
 
   beforeAll(() => {
-    dummyStar = {
-      name: 'testName',
-      birthday: '2020-02-28T20:00:00.000Z',
-      hasBook: false,
+    dummyStarPair = {
+      starId: 'starId',
+      userId: 'userId',
+      relationship: 'testR',
     };
   });
 
@@ -27,17 +27,17 @@ describe('stars', () => {
     lambdaContext = { awsRequestId: '456' };
 
     // prepare mock mockStarService
-    mockStarService = { addStar: jest.fn() };
+    mockStarService = { addStarPair: jest.fn() };
     bindings.rebind<StarService>(StarService).toConstantValue(mockStarService);
   });
 
   it('POST should work', async () => {
     event = {
       httpMethod: 'POST',
-      body: JSON.stringify(dummyStar),
+      body: JSON.stringify(dummyStarPair),
     };
-    await stars(event, lambdaContext);
-    expect(mockStarService.addStar).toBeCalledTimes(1);
+    await starPair(event, lambdaContext);
+    expect(mockStarService.addStarPair).toBeCalledTimes(1);
   });
 
   it('POST should fail with null body', async () => {
@@ -45,7 +45,7 @@ describe('stars', () => {
       httpMethod: 'POST',
       body: null,
     };
-    await expect(stars(event, lambdaContext)).resolves.toStrictEqual(
+    await expect(starPair(event, lambdaContext)).resolves.toStrictEqual(
       errorOutput(new Error('null body'))
     );
   });
@@ -55,7 +55,7 @@ describe('stars', () => {
       httpMethod: 'UNKNONW',
       body: null,
     };
-    await expect(stars(event, lambdaContext)).resolves.toStrictEqual(
+    await expect(starPair(event, lambdaContext)).resolves.toStrictEqual(
       errorOutput(new Error('unknown http method'))
     );
   });

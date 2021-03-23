@@ -1,16 +1,62 @@
 import { inject, injectable } from 'inversify';
 import { SadalsuudEntity } from 'src/model/DbKey';
+import { DbStar, Star } from 'src/model/sadalsuud/Star';
+import { StarPair } from 'src/model/sadalsuud/StarPair';
 import { Trip } from 'src/model/sadalsuud/Trip';
 import { DbUser, Role } from 'src/model/sadalsuud/User';
-import { UserService } from 'src/services/UserService';
+import { DbService } from './services/DbService';
 
 /**
- * Validator of trip type
+ * Validator for lambda input
  */
 @injectable()
-export class TripValidator {
-  @inject(UserService)
-  private readonly userService!: UserService;
+export class Validator {
+  @inject(DbService)
+  private readonly dbService!: DbService;
+
+  public validateStar(star: Star): void {
+    if (star.name === undefined) throw new Error('name is missing');
+    if (star.birthday === undefined) throw new Error('birthday is missing');
+    if (star.hasBook === undefined) throw new Error('hasBook is missing');
+    if (star.hasBook === true && star.level === undefined)
+      throw new Error('level is missing');
+
+    if (typeof star.name !== 'string') throw new Error('name should be string');
+    if (typeof star.birthday !== 'string')
+      throw new Error('birthday should be string');
+    if (typeof star.hasBook !== 'boolean')
+      throw new Error('hasBook should be boolean');
+    if (star.hasBook === true && typeof star.level !== 'string')
+      throw new Error('level should be string');
+  }
+
+  public async validateStarPair(starPair: StarPair): Promise<void> {
+    if (starPair.starId === undefined) throw new Error('starId is missing');
+    if (starPair.userId === undefined) throw new Error('userId is missing');
+    if (starPair.relationship === undefined)
+      throw new Error('relationship is missing');
+
+    if (typeof starPair.starId !== 'string')
+      throw new Error('starId should be string');
+    if (typeof starPair.userId !== 'string')
+      throw new Error('userId should be string');
+    if (typeof starPair.relationship !== 'string')
+      throw new Error('relationship should be string');
+
+    const star: DbStar | null = await this.dbService.getItem<DbStar>({
+      projectEntity: SadalsuudEntity.star,
+      creationId: starPair.starId,
+    });
+    if (star === null) throw new Error(`star ${starPair.starId} is not found`);
+
+    const user: DbUser | null = await this.dbService.getItem<DbUser>({
+      projectEntity: SadalsuudEntity.user,
+      creationId: starPair.userId,
+    });
+    if (user === null) throw new Error(`user ${starPair.userId} is not found`);
+    if (user.role !== Role.FAMILY)
+      throw new Error(`role of user ${starPair.userId} is not ${Role.FAMILY}`);
+  }
 
   public async validateTrip(trip: Trip): Promise<void> {
     if (trip.type === undefined) throw new Error('type is missing');
@@ -72,10 +118,11 @@ export class TripValidator {
       if (typeof participant !== 'string')
         throw new Error('participants should be an array of string');
 
-      const user: DbUser | null = await this.userService.getUserById(
-        SadalsuudEntity.user,
-        participant
-      );
+      const user: DbUser | null = await this.dbService.getItem<DbUser>({
+        projectEntity: SadalsuudEntity.user,
+        creationId: participant,
+      });
+
       if (user === null) throw new Error(`user ${participant} is not found`);
       if (user.role !== Role.STAR_RAIN)
         throw new Error(`role of user ${participant} is not ${Role.STAR_RAIN}`);

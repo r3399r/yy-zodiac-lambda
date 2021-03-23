@@ -3,7 +3,7 @@ import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbTrip, Trip } from 'src/model/sadalsuud/Trip';
 import { DbUser } from 'src/model/sadalsuud/User';
 import { generateId } from 'src/util/generateId';
-import { TripValidator } from 'src/validator/TripValidator';
+import { Validator } from 'src/Validator';
 import { DbService } from './DbService';
 import { UserService } from './UserService';
 
@@ -18,8 +18,8 @@ export class TripService {
   @inject(UserService)
   private readonly userService!: UserService;
 
-  @inject(TripValidator)
-  private readonly tripValidator!: TripValidator;
+  @inject(Validator)
+  private readonly validator!: Validator;
 
   public async getTrips(): Promise<DbTrip[]> {
     return await this.dbService.query<DbTrip>(SadalsuudEntity.trip);
@@ -50,7 +50,7 @@ export class TripService {
   }
 
   public async addTrip(trip: Trip): Promise<DbTrip> {
-    await this.tripValidator.validateTrip(trip);
+    await this.validator.validateTrip(trip);
 
     const creationId: string = generateId();
     const dbTrip: DbTrip = {

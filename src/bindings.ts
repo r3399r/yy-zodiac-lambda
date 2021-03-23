@@ -9,7 +9,7 @@ import { SsmService } from 'src/services/SsmService';
 import { StarService } from 'src/services/StarService';
 import { TripService } from 'src/services/TripService';
 import { UserService } from 'src/services/UserService';
-import { TripValidator } from 'src/validator/TripValidator';
+import { Validator } from 'src/Validator';
 
 const container: Container = new Container();
 
@@ -30,7 +30,7 @@ container.bind<Client>(Client).toDynamicValue(
 );
 
 // validator
-container.bind<TripValidator>(TripValidator).toSelf();
+container.bind<Validator>(Validator).toSelf();
 
 // AWS
 container
