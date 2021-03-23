@@ -3,6 +3,7 @@ import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbSign, InputSign } from 'src/model/sadalsuud/Sign';
 import { DbUser, Role } from 'src/model/sadalsuud/User';
 import { generateId } from 'src/util/generateId';
+import { Validator } from 'src/Validator';
 import { DbService } from './DbService';
 import { LineService } from './LineService';
 import { UserService } from './UserService';
@@ -21,7 +22,12 @@ export class SignService {
   @inject(LineService)
   private readonly lineService!: LineService;
 
+  @inject(Validator)
+  private readonly validator!: Validator;
+
   public async addSign(sign: InputSign): Promise<string> {
+    this.validator.validateSign(sign);
+
     // find linsUserId in sadalsuud-user of db
     const user: DbUser | null = await this.userService.getUserByLineId(
       SadalsuudEntity.user,
@@ -47,16 +53,14 @@ export class SignService {
       SadalsuudEntity.sign,
       [
         {
-          key: 'tripCreationId',
-          value: sign.tripCreationId,
+          key: 'tripId',
+          value: sign.tripId,
         },
-        { key: 'userCreationId', value: user.creationId },
+        { key: 'userId', value: user.creationId },
       ]
     );
     if (existentSign.length > 1)
-      throw new Error(
-        'Get multiple signs with same tripCreationId and userCreationId'
-      );
+      throw new Error('Get multiple signs with same tripId and userId');
 
     // if sign exists, return
     if (existentSign.length === 1)
@@ -67,10 +71,16 @@ export class SignService {
     await this.dbService.putItem<DbSign>({
       projectEntity: SadalsuudEntity.sign,
       creationId,
-      tripCreationId: sign.tripCreationId,
-      userCreationId: user.creationId,
+      tripId: sign.tripId,
+      userId: user.creationId,
     });
 
     return '報名成功，將於截止後進行抽籤';
+  }
+
+  public async getSign(tripId: string): Promise<DbSign[]> {
+    return await this.dbService.query<DbSign>(SadalsuudEntity.sign, [
+      { key: 'tripId', value: tripId },
+    ]);
   }
 }

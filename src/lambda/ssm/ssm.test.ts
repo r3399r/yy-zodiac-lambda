@@ -3,7 +3,7 @@ import { LambdaContext } from 'src/lambda/LambdaContext';
 import { ssm } from 'src/lambda/ssm/ssm';
 import { SsmEvent } from 'src/lambda/ssm/SsmEvent';
 import { SsmService } from 'src/services/SsmService';
-import { successOutput } from 'src/util/LambdaOutput';
+import { errorOutput, successOutput } from 'src/util/LambdaOutput';
 
 /**
  * Tests of the ssm function.
@@ -47,8 +47,8 @@ describe('ssm', () => {
       httpMethod: 'GET',
       queryStringParameters: null,
     };
-    await expect(ssm(event, lambdaContext)).rejects.toThrow(
-      'null query string parameters'
+    await expect(ssm(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('null query string parameters'))
     );
   });
 
@@ -57,8 +57,8 @@ describe('ssm', () => {
       httpMethod: 'GET',
       queryStringParameters: {},
     };
-    await expect(ssm(event, lambdaContext)).rejects.toThrow(
-      'missing parameter name'
+    await expect(ssm(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('missing parameter name'))
     );
   });
 
@@ -67,8 +67,8 @@ describe('ssm', () => {
       httpMethod: 'UNKNONW',
       queryStringParameters: null,
     };
-    await expect(ssm(event, lambdaContext)).rejects.toThrow(
-      'unknown http method'
+    await expect(ssm(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('unknown http method'))
     );
   });
 });

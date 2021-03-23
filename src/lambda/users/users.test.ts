@@ -5,7 +5,7 @@ import { UsersEvent } from 'src/lambda/users/UsersEvent';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbUser, Role } from 'src/model/sadalsuud/User';
 import { UserService } from 'src/services/UserService';
-import { successOutput } from 'src/util/LambdaOutput';
+import { errorOutput, successOutput } from 'src/util/LambdaOutput';
 
 /**
  * Tests of the users function.
@@ -60,8 +60,8 @@ describe('users', () => {
       pathParameters: null,
       queryStringParameters: null,
     };
-    await expect(users(event, lambdaContext)).rejects.toThrow(
-      'null path parameter'
+    await expect(users(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('null path parameter'))
     );
   });
 
@@ -72,8 +72,8 @@ describe('users', () => {
       pathParameters: { id: 'abc' },
       queryStringParameters: null,
     };
-    await expect(users(event, lambdaContext)).rejects.toThrow(
-      'null query string parameters'
+    await expect(users(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('null query string parameters'))
     );
   });
 
@@ -84,8 +84,8 @@ describe('users', () => {
       pathParameters: { id: 'abc' },
       queryStringParameters: { entity: undefined },
     };
-    await expect(users(event, lambdaContext)).rejects.toThrow(
-      'missing project entity'
+    await expect(users(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('missing project entity'))
     );
   });
 
@@ -96,8 +96,8 @@ describe('users', () => {
       pathParameters: { id: undefined },
       queryStringParameters: { entity: SadalsuudEntity.user },
     };
-    await expect(users(event, lambdaContext)).rejects.toThrow(
-      'missing user id'
+    await expect(users(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('missing user id'))
     );
   });
 
@@ -119,8 +119,8 @@ describe('users', () => {
       pathParameters: null,
       queryStringParameters: null,
     };
-    await expect(users(event, lambdaContext)).rejects.toThrow(
-      'null query string parameters'
+    await expect(users(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('null query string parameters'))
     );
   });
 
@@ -131,8 +131,8 @@ describe('users', () => {
       pathParameters: null,
       queryStringParameters: { entity: undefined },
     };
-    await expect(users(event, lambdaContext)).rejects.toThrow(
-      'missing project entity'
+    await expect(users(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('missing project entity'))
     );
   });
 
@@ -143,7 +143,9 @@ describe('users', () => {
       pathParameters: null,
       queryStringParameters: { entity: SadalsuudEntity.user },
     };
-    await expect(users(event, lambdaContext)).rejects.toThrow('null body');
+    await expect(users(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('null body'))
+    );
   });
 
   it('should fail with unknown method', async () => {
@@ -153,8 +155,8 @@ describe('users', () => {
       pathParameters: null,
       queryStringParameters: null,
     };
-    await expect(users(event, lambdaContext)).rejects.toThrow(
-      'unknown http method'
+    await expect(users(event, lambdaContext)).resolves.toStrictEqual(
+      errorOutput(new Error('unknown http method'))
     );
   });
 });

@@ -2,6 +2,7 @@ import { bindings } from 'src/bindings';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { Role } from 'src/model/sadalsuud/User';
 import { DbUser, User } from 'src/model/User';
+import { Validator } from 'src/Validator';
 import { DbService } from './DbService';
 import { UserService } from './UserService';
 
@@ -11,6 +12,7 @@ import { UserService } from './UserService';
 describe('UserService', () => {
   let userService: UserService;
   let mockDbService: any;
+  let mockValidator: any;
   let dummyUser: User;
   let dummyDbUser: DbUser;
 
@@ -32,7 +34,10 @@ describe('UserService', () => {
 
   beforeEach(() => {
     mockDbService = { putItem: jest.fn(), getItem: jest.fn(() => dummyDbUser) };
+    mockValidator = { validateUser: jest.fn() };
+
     bindings.rebind<DbService>(DbService).toConstantValue(mockDbService);
+    bindings.rebind<Validator>(Validator).toConstantValue(mockValidator);
 
     userService = bindings.get<UserService>(UserService);
   });

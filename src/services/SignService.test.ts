@@ -2,6 +2,7 @@ import { bindings } from 'src/bindings';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbSign } from 'src/model/sadalsuud/Sign';
 import { DbUser, Role } from 'src/model/sadalsuud/User';
+import { Validator } from 'src/Validator';
 import { DbService } from './DbService';
 import { LineService } from './LineService';
 import { SignService } from './SignService';
@@ -15,6 +16,7 @@ describe('SignService', () => {
   let mockDbService: any;
   let mockUserService: any;
   let mockLineService: any;
+  let mockValidator: any;
   let dummyUser: DbUser;
   let dummySign: DbSign;
 
@@ -31,8 +33,8 @@ describe('SignService', () => {
     dummySign = {
       projectEntity: SadalsuudEntity.sign,
       creationId: 'testId',
-      tripCreationId: 'tripId',
-      userCreationId: 'userId',
+      tripId: 'tripId',
+      userId: 'userId',
     };
   });
 
@@ -40,9 +42,12 @@ describe('SignService', () => {
     mockDbService = {};
     mockUserService = {};
     mockLineService = { pushMessage: jest.fn() };
+    mockValidator = { validateSign: jest.fn() };
+
     bindings.rebind<DbService>(DbService).toConstantValue(mockDbService);
     bindings.rebind<UserService>(UserService).toConstantValue(mockUserService);
     bindings.rebind<LineService>(LineService).toConstantValue(mockLineService);
+    bindings.rebind<Validator>(Validator).toConstantValue(mockValidator);
 
     signService = bindings.get<SignService>(SignService);
   });
@@ -53,7 +58,7 @@ describe('SignService', () => {
     mockDbService.putItem = jest.fn();
 
     const res: string = await signService.addSign({
-      tripCreationId: dummySign.tripCreationId,
+      tripId: dummySign.tripId,
       lineUserId: dummyUser.lineUserId,
     });
     expect(res).toBe('報名成功，將於截止後進行抽籤');
@@ -64,7 +69,7 @@ describe('SignService', () => {
     mockDbService.query = jest.fn(() => [dummySign]);
 
     const res: string = await signService.addSign({
-      tripCreationId: dummySign.tripCreationId,
+      tripId: dummySign.tripId,
       lineUserId: dummyUser.lineUserId,
     });
     expect(res).toBe('已經報名成功過囉，將於截止後進行抽籤');
@@ -74,7 +79,7 @@ describe('SignService', () => {
     mockUserService.getUserByLineId = jest.fn(() => null);
 
     const res: string = await signService.addSign({
-      tripCreationId: dummySign.tripCreationId,
+      tripId: dummySign.tripId,
       lineUserId: dummyUser.lineUserId,
     });
     expect(res).toBe(
@@ -97,7 +102,7 @@ describe('SignService', () => {
     mockUserService.getUserByLineId = jest.fn(() => starRainMember);
 
     const res: string = await signService.addSign({
-      tripCreationId: dummySign.tripCreationId,
+      tripId: dummySign.tripId,
       lineUserId: dummyUser.lineUserId,
     });
     expect(res).toBe(
@@ -111,11 +116,14 @@ describe('SignService', () => {
 
     await expect(
       signService.addSign({
-        tripCreationId: dummySign.tripCreationId,
+        tripId: dummySign.tripId,
         lineUserId: dummyUser.lineUserId,
       })
-    ).rejects.toThrow(
-      'Get multiple signs with same tripCreationId and userCreationId'
-    );
+    ).rejects.toThrow('Get multiple signs with same tripId and userId');
+  });
+
+  it('getSign should work', async () => {
+    mockDbService.query = jest.fn(() => [dummySign]);
+    expect(await signService.getSign('abc')).toStrictEqual([dummySign]);
   });
 });

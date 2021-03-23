@@ -1,13 +1,13 @@
 import { DbKey } from 'src/model/DbKey';
 
 export interface InputSign {
-  tripCreationId: string;
+  tripId: string;
   lineUserId: string;
 }
 
 export interface Sign {
-  tripCreationId: string;
-  userCreationId: string;
+  tripId: string;
+  userId: string;
 }
 
 export type DbSign = Sign & DbKey;

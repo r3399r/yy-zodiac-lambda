@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import { Entity } from 'src/model/DbKey';
 import { DbUser, User } from 'src/model/User';
 import { generateId } from 'src/util/generateId';
+import { Validator } from 'src/Validator';
 import { DbService } from './DbService';
 
 /**
@@ -11,6 +12,9 @@ import { DbService } from './DbService';
 export class UserService {
   @inject(DbService)
   private readonly dbService!: DbService;
+
+  @inject(Validator)
+  private readonly validator!: Validator;
 
   public async getUserById(
     projectEntity: Entity,
@@ -48,6 +52,8 @@ export class UserService {
   }
 
   public async addUser(projectEntity: Entity, user: User): Promise<DbUser> {
+    await this.validator.validateUser(projectEntity, user);
+
     const creationId: string = generateId();
     const dbUser: DbUser = {
       projectEntity,
