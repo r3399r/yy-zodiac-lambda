@@ -22,7 +22,26 @@ export class TripService {
   private readonly validator!: Validator;
 
   public async getTrips(): Promise<DbTrip[]> {
-    return await this.dbService.query<DbTrip>(SadalsuudEntity.trip);
+    const [rawTrips, tempUsers]: [DbTrip[], DbUser[]] = await Promise.all([
+      this.dbService.query<DbTrip>(SadalsuudEntity.trip),
+      this.userService.getAllUsers(SadalsuudEntity.user),
+    ]);
+
+    const allUsers: { [key: string]: DbUser } = {};
+    tempUsers.forEach((user: DbUser) => {
+      allUsers[user.creationId] = user;
+    });
+
+    return rawTrips.map((trip: DbTrip) => {
+      trip.participants.map((participant: string, index: number) => {
+        if (allUsers[participant] === undefined)
+          throw new Error(`user ${participant} is not found`);
+
+        trip.participants[index] = allUsers[participant].name;
+      });
+
+      return trip;
+    });
   }
 
   public async getTrip(creationId: string): Promise<DbTrip | null> {

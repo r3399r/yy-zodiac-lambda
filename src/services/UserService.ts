@@ -26,6 +26,10 @@ export class UserService {
     });
   }
 
+  public async getAllUsers(projectEntity: Entity): Promise<DbUser[]> {
+    return await this.dbService.query<DbUser>(projectEntity);
+  }
+
   public async getUserByLineId(
     projectEntity: Entity,
     lineUserId: string

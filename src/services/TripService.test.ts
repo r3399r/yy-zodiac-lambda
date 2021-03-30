@@ -1,7 +1,7 @@
 import { bindings } from 'src/bindings';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbTrip, NeedFamilyAccompany, Trip } from 'src/model/sadalsuud/Trip';
-import { Role, User } from 'src/model/sadalsuud/User';
+import { DbUser, Role } from 'src/model/sadalsuud/User';
 import { Validator } from 'src/Validator';
 import { DbService } from './DbService';
 import { TripService } from './TripService';
@@ -17,7 +17,7 @@ describe('TripService', () => {
   let mockValidator: any;
   let dummyTrip: Trip;
   let dummyDbTrip: DbTrip;
-  let dummyUser: User;
+  let dummyDbUser: DbUser;
 
   beforeEach(() => {
     dummyTrip = {
@@ -41,7 +41,9 @@ describe('TripService', () => {
       creationId: 'testId',
       ...dummyTrip,
     };
-    dummyUser = {
+    dummyDbUser = {
+      projectEntity: SadalsuudEntity.user,
+      creationId: 'abcd',
       lineUserId: 'test',
       role: Role.STAR_RAIN,
       joinSession: 40,
@@ -65,13 +67,26 @@ describe('TripService', () => {
   });
 
   it('getTrips should work', async () => {
+    mockUserService.getAllUsers = jest.fn(() => [dummyDbUser]);
+
     const res: DbTrip[] = await tripService.getTrips();
     expect(res).toStrictEqual([dummyDbTrip]);
   });
 
+  it('getTrips should fail when user id does not exist', async () => {
+    dummyDbUser.creationId = 'aaaa';
+    mockUserService.getAllUsers = jest.fn(() => [dummyDbUser]);
+
+    await expect(tripService.getTrips()).rejects.toThrow(
+      'user abcd is not found'
+    );
+    // const res: DbTrip[] = await tripService.getTrips();
+    // expect(res).toStrictEqual([dummyDbTrip]);
+  });
+
   it('getTrip should work', async () => {
     mockDbService.getItem = jest.fn(() => dummyDbTrip);
-    mockUserService.getUserById = jest.fn(() => dummyUser);
+    mockUserService.getUserById = jest.fn(() => dummyDbUser);
 
     const res: DbTrip | null = await tripService.getTrip('abc');
     expect(res).toStrictEqual(dummyDbTrip);

@@ -60,6 +60,13 @@ describe('UserService', () => {
     expect(res).toStrictEqual(dummyDbUser);
   });
 
+  it('getAllUsers should work', async () => {
+    mockDbService.query = jest.fn(() => [dummyDbUser]);
+
+    const res: DbUser[] = await userService.getAllUsers(SadalsuudEntity.user);
+    expect(res).toStrictEqual([dummyDbUser]);
+  });
+
   it('getUserByLineId should return null', async () => {
     mockDbService.query = jest.fn(() => []);
 
