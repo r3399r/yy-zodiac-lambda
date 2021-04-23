@@ -1,6 +1,6 @@
 {
   "name": "celestial-service",
-  "version": "1.0.2",
+  "version": "0.0.1",
   "author": "Yue Chang",
   "main": "index.js",
   "scripts": {

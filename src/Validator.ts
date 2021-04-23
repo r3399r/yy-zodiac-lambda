@@ -103,8 +103,10 @@ export class Validator {
       creationId: starPair.userId,
     });
     if (user === null) throw new Error(`user ${starPair.userId} is not found`);
-    if (user.role !== Role.FAMILY)
-      throw new Error(`role of user ${starPair.userId} is not ${Role.FAMILY}`);
+    if (user.role !== Role.FAMILY && user.role !== Role.STAR)
+      throw new Error(
+        `role of user ${starPair.userId} is not ${Role.FAMILY} or ${Role.STAR}`
+      );
   }
 
   public async validateTrip(trip: Trip): Promise<void> {

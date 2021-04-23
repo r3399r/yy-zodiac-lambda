@@ -80,8 +80,6 @@ describe('TripService', () => {
     await expect(tripService.getTrips()).rejects.toThrow(
       'user abcd is not found'
     );
-    // const res: DbTrip[] = await tripService.getTrips();
-    // expect(res).toStrictEqual([dummyDbTrip]);
   });
 
   it('getTrip should work', async () => {
