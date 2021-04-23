@@ -45,7 +45,7 @@ describe('UserService', () => {
   it('getUserById should work', async () => {
     const res: DbUser | null = await userService.getUserById(
       SadalsuudEntity.user,
-      'abcd'
+      'abc'
     );
     expect(res).toStrictEqual(dummyDbUser);
   });
@@ -55,7 +55,7 @@ describe('UserService', () => {
 
     const res: DbUser | null = await userService.getUserByLineId(
       SadalsuudEntity.user,
-      'abcd'
+      'abc'
     );
     expect(res).toStrictEqual(dummyDbUser);
   });
@@ -72,7 +72,7 @@ describe('UserService', () => {
 
     const res: DbUser | null = await userService.getUserByLineId(
       SadalsuudEntity.trip,
-      'abcd'
+      'abc'
     );
     expect(res).toBeNull();
   });
@@ -81,7 +81,7 @@ describe('UserService', () => {
     mockDbService.query = jest.fn(() => [dummyDbUser, dummyDbUser]);
 
     await expect(
-      userService.getUserByLineId(SadalsuudEntity.user, 'abcd')
+      userService.getUserByLineId(SadalsuudEntity.user, 'abc')
     ).rejects.toThrow('Get multiple users with same lineUserId');
   });
 
