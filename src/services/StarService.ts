@@ -35,11 +35,23 @@ export class StarService {
     return dbStar;
   }
 
-  public async getStar(starId: string): Promise<DbStar | null> {
-    return await this.dbService.getItem<DbStar>({
+  public async getStar(starId: string): Promise<DbStar> {
+    const dbStar: DbStar | null = await this.dbService.getItem<DbStar>({
       projectEntity: SadalsuudEntity.star,
       creationId: starId,
     });
+    if (dbStar === null) throw new Error('star does not exist');
+
+    return dbStar;
+  }
+
+  public async getStarPairByUser(userId: string): Promise<DbStarPair[]> {
+    return await this.dbService.query<DbStarPair>(SadalsuudEntity.starPair, [
+      {
+        key: 'userId',
+        value: userId,
+      },
+    ]);
   }
 
   public async addStarPair(starPair: StarPair): Promise<DbStarPair> {

@@ -36,7 +36,11 @@ describe('StarService', () => {
   });
 
   beforeEach(() => {
-    mockDbService = { putItem: jest.fn(), getItem: jest.fn(() => dummyDbStar) };
+    mockDbService = {
+      putItem: jest.fn(),
+      getItem: jest.fn(() => dummyDbStar),
+      query: jest.fn(() => [dummyStarPair]),
+    };
     mockValidator = { validateStar: jest.fn(), validateStarPair: jest.fn() };
 
     bindings.rebind<DbService>(DbService).toConstantValue(mockDbService);
@@ -54,8 +58,22 @@ describe('StarService', () => {
     expect(await starService.getStar('abc')).toStrictEqual(dummyDbStar);
   });
 
+  it('getStar should fail if not exist', async () => {
+    mockDbService.getItem = jest.fn(() => null);
+
+    await expect(starService.getStar('abc')).rejects.toThrow(
+      'star does not exist'
+    );
+  });
+
   it('addStarPair should work', async () => {
     await starService.addStarPair(dummyStarPair);
     expect(mockDbService.putItem).toHaveBeenCalledTimes(1);
+  });
+
+  it('getStarPairByUser should work', async () => {
+    expect(await starService.getStarPairByUser('abc')).toStrictEqual([
+      dummyStarPair,
+    ]);
   });
 });

@@ -1,4 +1,5 @@
 import { DbKey } from 'src/model/DbKey';
+import { DbStar } from './Star';
 
 export enum Role {
   STAR_RAIN = 'starRain',
@@ -23,10 +24,12 @@ type StarRainUser = UserCommon & {
 
 type FamilyUser = UserCommon & {
   role: Role.FAMILY;
+  starInfo?: DbStar[];
 };
 
 type StarUser = UserCommon & {
   role: Role.STAR;
+  starInfo?: DbStar[];
 };
 
 type VolunteerUser = UserCommon & {

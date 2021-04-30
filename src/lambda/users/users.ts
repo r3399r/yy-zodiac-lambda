@@ -25,7 +25,7 @@ export async function users(
         if (event.pathParameters.id === undefined)
           throw new Error('missing user id');
 
-        res = await userService.getUserByLineId(event.pathParameters.id);
+        res = await userService.getWholeUserInfo(event.pathParameters.id);
         break;
       case 'POST':
         if (event.body === null) throw new Error('null body');

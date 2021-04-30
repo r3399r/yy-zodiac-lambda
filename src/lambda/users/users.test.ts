@@ -36,7 +36,7 @@ describe('users', () => {
     mockUserService = {};
     bindings.rebind<UserService>(UserService).toConstantValue(mockUserService);
 
-    mockUserService.getUserByLineId = jest.fn(() => dummyUser);
+    mockUserService.getWholeUserInfo = jest.fn(() => dummyUser);
     mockUserService.addUser = jest.fn();
   });
 
@@ -49,7 +49,7 @@ describe('users', () => {
     await expect(users(event, lambdaContext)).resolves.toStrictEqual(
       successOutput(dummyUser)
     );
-    expect(mockUserService.getUserByLineId).toBeCalledTimes(1);
+    expect(mockUserService.getWholeUserInfo).toBeCalledTimes(1);
   });
 
   it('GET should fail with null parameter', async () => {
