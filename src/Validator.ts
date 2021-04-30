@@ -1,11 +1,11 @@
 import { inject, injectable } from 'inversify';
-import { Entity, SadalsuudEntity } from 'src/model/DbKey';
+import { DbKey, Entity, SadalsuudEntity } from 'src/model/DbKey';
 import { DbStar, Star } from 'src/model/sadalsuud/Star';
 import { StarPair } from 'src/model/sadalsuud/StarPair';
-import { Trip } from 'src/model/sadalsuud/Trip';
+import { DbTrip, Trip } from 'src/model/sadalsuud/Trip';
 import { DbUser, Role, User as SadalsuudUser } from 'src/model/sadalsuud/User';
 import { User } from 'src/model/User';
-import { InputSign } from './model/sadalsuud/Sign';
+import { DbSign, Sign } from './model/sadalsuud/Sign';
 import { DbService } from './services/DbService';
 
 /**
@@ -15,6 +15,16 @@ import { DbService } from './services/DbService';
 export class Validator {
   @inject(DbService)
   private readonly dbService!: DbService;
+
+  private async checkItemExists<T>(dbKey: DbKey): Promise<T> {
+    const res: T | null = await this.dbService.getItem<T>(dbKey);
+    if (res === null)
+      throw new Error(
+        `${dbKey.projectEntity} ${dbKey.creationId} is not found`
+      );
+
+    return res;
+  }
 
   private async validateSadalsuudUser(user: SadalsuudUser): Promise<void> {
     if (user.lineUserId === undefined) throw new Error('lineUserId is missing');
@@ -53,14 +63,38 @@ export class Validator {
       await this.validateSadalsuudUser(user);
   }
 
-  public validateSign(sign: InputSign): void {
+  public async validateSign(sign: Sign): Promise<void> {
     if (sign.tripId === undefined) throw new Error('tripId is missing');
-    if (sign.lineUserId === undefined) throw new Error('lineUserId is missing');
+    if (sign.starId === undefined) throw new Error('starId is missing');
 
     if (typeof sign.tripId !== 'string')
       throw new Error('tripId should be string');
-    if (typeof sign.lineUserId !== 'string')
-      throw new Error('lineUserId should be string');
+    if (typeof sign.starId !== 'string')
+      throw new Error('starId should be string');
+
+    await this.checkItemExists<DbStar>({
+      projectEntity: SadalsuudEntity.star,
+      creationId: sign.starId,
+    });
+    await this.checkItemExists<DbTrip>({
+      projectEntity: SadalsuudEntity.trip,
+      creationId: sign.tripId,
+    });
+
+    const dbSign: DbSign[] = await this.dbService.query<DbSign>(
+      SadalsuudEntity.sign,
+      [
+        {
+          key: 'starId',
+          value: sign.starId,
+        },
+        {
+          key: 'tripId',
+          value: sign.tripId,
+        },
+      ]
+    );
+    if (dbSign.length !== 0) throw new Error('already signed');
   }
 
   public validateStar(star: Star): void {
@@ -92,17 +126,14 @@ export class Validator {
     if (typeof starPair.relationship !== 'string')
       throw new Error('relationship should be string');
 
-    const star: DbStar | null = await this.dbService.getItem<DbStar>({
+    await this.checkItemExists<DbStar>({
       projectEntity: SadalsuudEntity.star,
       creationId: starPair.starId,
     });
-    if (star === null) throw new Error(`star ${starPair.starId} is not found`);
-
-    const user: DbUser | null = await this.dbService.getItem<DbUser>({
+    const user: DbUser = await this.checkItemExists<DbUser>({
       projectEntity: SadalsuudEntity.user,
       creationId: starPair.userId,
     });
-    if (user === null) throw new Error(`user ${starPair.userId} is not found`);
     if (user.role !== Role.FAMILY && user.role !== Role.STAR)
       throw new Error(
         `role of user ${starPair.userId} is not ${Role.FAMILY} or ${Role.STAR}`
@@ -169,12 +200,10 @@ export class Validator {
       if (typeof participant !== 'string')
         throw new Error('participants should be an array of string');
 
-      const user: DbUser | null = await this.dbService.getItem<DbUser>({
+      const user: DbUser = await this.checkItemExists<DbUser>({
         projectEntity: SadalsuudEntity.user,
         creationId: participant,
       });
-
-      if (user === null) throw new Error(`user ${participant} is not found`);
       if (user.role !== Role.STAR_RAIN)
         throw new Error(`role of user ${participant} is not ${Role.STAR_RAIN}`);
     }

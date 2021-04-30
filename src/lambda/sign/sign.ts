@@ -1,6 +1,6 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
-import { DbSign, InputSign } from 'src/model/sadalsuud/Sign';
+import { DbSign, Sign } from 'src/model/sadalsuud/Sign';
 import { SignService } from 'src/services/SignService';
 import {
   errorOutput,
@@ -16,7 +16,7 @@ export async function sign(
   try {
     const signService: SignService = bindings.get<SignService>(SignService);
 
-    let res: string | DbSign[];
+    let res: DbSign | DbSign[];
 
     switch (event.httpMethod) {
       case 'GET':
@@ -29,7 +29,7 @@ export async function sign(
       case 'POST':
         if (event.body === null) throw new Error('null body');
 
-        const newSign: InputSign = JSON.parse(event.body);
+        const newSign: Sign = JSON.parse(event.body);
         res = await signService.addSign(newSign);
         break;
       default:

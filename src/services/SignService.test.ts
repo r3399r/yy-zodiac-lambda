@@ -1,7 +1,6 @@
 import { bindings } from 'src/bindings';
 import { SadalsuudEntity } from 'src/model/DbKey';
-import { DbSign } from 'src/model/sadalsuud/Sign';
-import { DbUser, Role } from 'src/model/sadalsuud/User';
+import { DbSign, Sign } from 'src/model/sadalsuud/Sign';
 import { Validator } from 'src/Validator';
 import { DbService } from './DbService';
 import { LineService } from './LineService';
@@ -17,29 +16,23 @@ describe('SignService', () => {
   let mockUserService: any;
   let mockLineService: any;
   let mockValidator: any;
-  let dummyUser: DbUser;
-  let dummySign: DbSign;
+  let dummySign: Sign;
+  let dummyDbSign: DbSign;
 
   beforeAll(() => {
-    dummyUser = {
-      projectEntity: SadalsuudEntity.user,
-      creationId: 'testUserId',
-      lineUserId: 'testLineId',
-      role: Role.FAMILY,
-      phone: 'phone',
-      status: 'testStatus',
-      name: 'testName',
-    };
     dummySign = {
+      tripId: 'tripId',
+      starId: 'starId',
+    };
+    dummyDbSign = {
       projectEntity: SadalsuudEntity.sign,
       creationId: 'testId',
-      tripId: 'tripId',
-      userId: 'userId',
+      ...dummySign,
     };
   });
 
   beforeEach(() => {
-    mockDbService = {};
+    mockDbService = { putItem: jest.fn(), query: jest.fn(() => [dummyDbSign]) };
     mockUserService = {};
     mockLineService = { pushMessage: jest.fn() };
     mockValidator = { validateSign: jest.fn() };
@@ -52,78 +45,13 @@ describe('SignService', () => {
     signService = bindings.get<SignService>(SignService);
   });
 
-  it('addSign should work for first sign', async () => {
-    mockUserService.getUserByLineId = jest.fn(() => dummyUser);
-    mockDbService.query = jest.fn(() => []);
-    mockDbService.putItem = jest.fn();
+  it('addSign should work', async () => {
+    await signService.addSign(dummySign);
 
-    const res: string = await signService.addSign({
-      tripId: dummySign.tripId,
-      lineUserId: dummyUser.lineUserId,
-    });
-    expect(res).toBe('報名成功，將於截止後進行抽籤');
-  });
-
-  it('addSign should work for duplicate sign', async () => {
-    mockUserService.getUserByLineId = jest.fn(() => dummyUser);
-    mockDbService.query = jest.fn(() => [dummySign]);
-
-    const res: string = await signService.addSign({
-      tripId: dummySign.tripId,
-      lineUserId: dummyUser.lineUserId,
-    });
-    expect(res).toBe('已經報名成功過囉，將於截止後進行抽籤');
-  });
-
-  it('addSign should work for new user', async () => {
-    mockUserService.getUserByLineId = jest.fn(() => null);
-
-    const res: string = await signService.addSign({
-      tripId: dummySign.tripId,
-      lineUserId: dummyUser.lineUserId,
-    });
-    expect(res).toBe(
-      '報名尚未成功。資料庫並未有您的資料，請開啟LINE回覆星遊的官方帳號'
-    );
-    expect(mockLineService.pushMessage).toBeCalledTimes(1);
-  });
-
-  it('addSign should work for star-rain member', async () => {
-    const starRainMember: DbUser = {
-      projectEntity: SadalsuudEntity.user,
-      creationId: 'creationId',
-      lineUserId: 'testMember',
-      role: Role.STAR_RAIN,
-      joinSession: 30,
-      phone: 'testPhone',
-      name: 'testName2',
-      status: 'testStatus',
-    };
-    mockUserService.getUserByLineId = jest.fn(() => starRainMember);
-
-    const res: string = await signService.addSign({
-      tripId: dummySign.tripId,
-      lineUserId: dummyUser.lineUserId,
-    });
-    expect(res).toBe(
-      '報名失敗。此活動僅開放給星兒或家人報名，資料庫顯示您的身份為「星雨哥姐」。若您想參加活動或資料設定有誤，請洽星遊的LINE官方帳號，謝謝'
-    );
-  });
-
-  it('addSign should fail with abnormal result', async () => {
-    mockUserService.getUserByLineId = jest.fn(() => dummyUser);
-    mockDbService.query = jest.fn(() => [dummySign, dummySign]);
-
-    await expect(
-      signService.addSign({
-        tripId: dummySign.tripId,
-        lineUserId: dummyUser.lineUserId,
-      })
-    ).rejects.toThrow('Get multiple signs with same tripId and userId');
+    expect(mockDbService.putItem).toBeCalledTimes(1);
   });
 
   it('getSign should work', async () => {
-    mockDbService.query = jest.fn(() => [dummySign]);
-    expect(await signService.getSign('abc')).toStrictEqual([dummySign]);
+    expect(await signService.getSign('abc')).toStrictEqual([dummyDbSign]);
   });
 });

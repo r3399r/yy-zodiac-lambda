@@ -800,9 +800,6 @@ Resources:
       Environment:
         Variables:
           ENVR: !Sub ${TargetEnvr}
-          CHANNEL_SECRET: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-channel-secret:1}}'
-          CHANNEL_TOKEN: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-channel-token:1}}'
-          ENTITY: sadalsuud-user
   InvokePermissionSign:
     Type: AWS::Lambda::Permission
     DependsOn: [ServerlessApi, LambdaSign]

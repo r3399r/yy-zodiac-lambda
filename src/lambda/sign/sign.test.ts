@@ -1,6 +1,6 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
-import { InputSign } from 'src/model/sadalsuud/Sign';
+import { Sign } from 'src/model/sadalsuud/Sign';
 import { SignService } from 'src/services/SignService';
 import { errorOutput } from 'src/util/LambdaOutput';
 import { sign } from './sign';
@@ -13,12 +13,12 @@ describe('sign', () => {
   let event: SignEvent;
   let lambdaContext: LambdaContext | undefined;
   let mockSignService: any;
-  let dummyInputSign: InputSign;
+  let dummySign: Sign;
 
   beforeAll(() => {
-    dummyInputSign = {
+    dummySign = {
       tripId: 'testTrip',
-      lineUserId: 'testLine',
+      starId: 'testStar',
     };
   });
 
@@ -65,7 +65,7 @@ describe('sign', () => {
   it('POST should work', async () => {
     event = {
       httpMethod: 'POST',
-      body: JSON.stringify(dummyInputSign),
+      body: JSON.stringify(dummySign),
       queryStringParameters: null,
     };
     await sign(event, lambdaContext);
