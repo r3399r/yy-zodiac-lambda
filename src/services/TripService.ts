@@ -24,7 +24,7 @@ export class TripService {
   public async getTrips(): Promise<DbTrip[]> {
     const [rawTrips, tempUsers]: [DbTrip[], DbUser[]] = await Promise.all([
       this.dbService.query<DbTrip>(SadalsuudEntity.trip),
-      this.userService.getAllUsers(SadalsuudEntity.user),
+      this.userService.getAllUsers(),
     ]);
 
     const allUsers: { [key: string]: DbUser } = {};
@@ -55,7 +55,6 @@ export class TripService {
     await Promise.all(
       dbTrip.participants.map(async (participant: string, index: number) => {
         const dbUser: DbUser | null = await this.userService.getUserById(
-          SadalsuudEntity.user,
           participant
         );
         if (dbUser === null)

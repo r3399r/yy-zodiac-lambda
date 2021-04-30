@@ -30,7 +30,6 @@ export class SignService {
 
     // find linsUserId in sadalsuud-user of db
     const user: DbUser | null = await this.userService.getUserByLineId(
-      SadalsuudEntity.user,
       sign.lineUserId
     );
 

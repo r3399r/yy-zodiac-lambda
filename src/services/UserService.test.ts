@@ -43,50 +43,41 @@ describe('UserService', () => {
   });
 
   it('getUserById should work', async () => {
-    const res: DbUser | null = await userService.getUserById(
-      SadalsuudEntity.user,
-      'abc'
-    );
+    const res: DbUser | null = await userService.getUserById('abc');
     expect(res).toStrictEqual(dummyDbUser);
   });
 
   it('getUserByLineId should work', async () => {
     mockDbService.query = jest.fn(() => [dummyDbUser]);
 
-    const res: DbUser | null = await userService.getUserByLineId(
-      SadalsuudEntity.user,
-      'abc'
-    );
+    const res: DbUser | null = await userService.getUserByLineId('abc');
     expect(res).toStrictEqual(dummyDbUser);
   });
 
   it('getAllUsers should work', async () => {
     mockDbService.query = jest.fn(() => [dummyDbUser]);
 
-    const res: DbUser[] = await userService.getAllUsers(SadalsuudEntity.user);
+    const res: DbUser[] = await userService.getAllUsers();
     expect(res).toStrictEqual([dummyDbUser]);
   });
 
   it('getUserByLineId should return null', async () => {
     mockDbService.query = jest.fn(() => []);
 
-    const res: DbUser | null = await userService.getUserByLineId(
-      SadalsuudEntity.trip,
-      'abc'
-    );
+    const res: DbUser | null = await userService.getUserByLineId('abc');
     expect(res).toBeNull();
   });
 
   it('getUserByLineId should fail with abnormal result', async () => {
     mockDbService.query = jest.fn(() => [dummyDbUser, dummyDbUser]);
 
-    await expect(
-      userService.getUserByLineId(SadalsuudEntity.user, 'abc')
-    ).rejects.toThrow('Get multiple users with same lineUserId');
+    await expect(userService.getUserByLineId('abc')).rejects.toThrow(
+      'Get multiple users with same lineUserId'
+    );
   });
 
   it('addUser should work', async () => {
-    await userService.addUser(SadalsuudEntity.user, dummyUser);
+    await userService.addUser(dummyUser);
 
     expect(mockDbService.putItem).toBeCalledTimes(1);
   });

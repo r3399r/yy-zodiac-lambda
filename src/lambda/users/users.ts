@@ -22,30 +22,16 @@ export async function users(
       case 'GET':
         if (event.pathParameters === null)
           throw new Error('null path parameter');
-        if (event.queryStringParameters === null)
-          throw new Error('null query string parameters');
-        if (event.queryStringParameters.entity === undefined)
-          throw new Error('missing project entity');
         if (event.pathParameters.id === undefined)
           throw new Error('missing user id');
 
-        res = await userService.getUserByLineId(
-          event.queryStringParameters.entity,
-          event.pathParameters.id
-        );
+        res = await userService.getUserByLineId(event.pathParameters.id);
         break;
       case 'POST':
-        if (event.queryStringParameters === null)
-          throw new Error('null query string parameters');
-        if (event.queryStringParameters.entity === undefined)
-          throw new Error('missing project entity');
         if (event.body === null) throw new Error('null body');
 
         const user: User = JSON.parse(event.body);
-        res = await userService.addUser(
-          event.queryStringParameters.entity,
-          user
-        );
+        res = await userService.addUser(user);
         break;
       default:
         throw new Error('unknown http method');

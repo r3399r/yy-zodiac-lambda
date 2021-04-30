@@ -14,7 +14,7 @@ Parameters:
     Description: The primary role in that gives the Lambda function permission to do its work.
   NodeJsVer:
     Type: String
-    Default: nodejs12.x
+    Default: nodejs14.x
   TargetEnvr:
     Type: String
     Default: dev
@@ -758,6 +758,7 @@ Resources:
       Environment:
         Variables:
           ENVR: !Sub ${TargetEnvr}
+          ENTITY: sadalsuud-user
   InvokePermissionUsers:
     Type: AWS::Lambda::Permission
     DependsOn: [ServerlessApi, LambdaUsers]
@@ -778,6 +779,7 @@ Resources:
       Environment:
         Variables:
           ENVR: !Sub ${TargetEnvr}
+          ENTITY: sadalsuud-user
   InvokePermissionTrips:
     Type: AWS::Lambda::Permission
     DependsOn: [ServerlessApi, LambdaTrips]
@@ -800,6 +802,7 @@ Resources:
           ENVR: !Sub ${TargetEnvr}
           CHANNEL_SECRET: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-channel-secret:1}}'
           CHANNEL_TOKEN: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-channel-token:1}}'
+          ENTITY: sadalsuud-user
   InvokePermissionSign:
     Type: AWS::Lambda::Permission
     DependsOn: [ServerlessApi, LambdaSign]
