@@ -21,7 +21,8 @@ export function errorOutput(error: Error): LambdaOutput {
       'Access-Control-Allow-Origin': '*', // Required for CORS support to work
     },
     body: JSON.stringify({
-      error: error.message,
+      code: 400,
+      message: error.message,
     }),
   };
 }
