@@ -1,5 +1,6 @@
 import { Client } from '@line/bot-sdk';
 import { bindings } from 'src/bindings';
+import { PushMessage } from 'src/model/Line';
 import { LineService } from './LineService';
 
 /**
@@ -8,6 +9,14 @@ import { LineService } from './LineService';
 describe('LineService', () => {
   let lineService: LineService;
   let mockClient: any;
+  let dummyPushMessage: PushMessage;
+
+  beforeAll(() => {
+    dummyPushMessage = {
+      to: 'to',
+      messages: ['1message', '2message'],
+    };
+  });
 
   beforeEach(() => {
     mockClient = {};
@@ -19,7 +28,7 @@ describe('LineService', () => {
   it('pushMessage should work', async () => {
     mockClient.pushMessage = jest.fn();
 
-    await lineService.pushMessage('to', ['text1', 'text2']);
+    await lineService.pushMessage(dummyPushMessage);
     expect(mockClient.pushMessage).toBeCalledTimes(1);
   });
 });

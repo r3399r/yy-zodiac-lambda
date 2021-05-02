@@ -35,6 +35,77 @@ Resources:
             "title": !Sub "${TargetEnvr}-celestial-service-api"
           },
           "paths": {
+            "/api/line": {
+              "post": {
+                "produces": [
+                  "application/json"
+                ],
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    }
+                  }
+                },
+                "x-amazon-apigateway-integration": {
+                  "responses": {
+                    "default": {
+                      "statusCode": "200"
+                    }
+                  },
+                  "httpMethod": "POST",
+                  "uri": !Sub "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:278497686406:function:${TargetEnvr}-line/invocations",
+                  "passthroughBehavior": "when_no_match",
+                  "contentHandling": "CONVERT_TO_TEXT",
+                  "type": "aws_proxy"
+                }
+              },
+              "options": {
+                "consumes": [
+                  "application/json"
+                ],
+                "produces": [
+                  "application/json"
+                ],
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    },
+                    "headers": {
+                      "Access-Control-Allow-Origin": {
+                        "type": "string"
+                      },
+                      "Access-Control-Allow-Methods": {
+                        "type": "string"
+                      },
+                      "Access-Control-Allow-Headers": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "x-amazon-apigateway-integration": {
+                  "responses": {
+                    "default": {
+                      "statusCode": "200",
+                      "responseParameters": {
+                        "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+                        "method.response.header.Access-Control-Allow-Origin": "'*'"
+                      }
+                    }
+                  },
+                  "requestTemplates": {
+                    "application/json": "{\"statusCode\": 200}"
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "type": "mock"
+                }
+              }
+            },
             "/api/sign": {
               "get": {
                 "produces": [
@@ -868,6 +939,28 @@ Resources:
     DependsOn: [ServerlessApi, LambdaSsm]
     Properties:
         FunctionName: !Sub ${TargetEnvr}-ssm
+        Action: lambda:InvokeFunction
+        Principal: apigateway.amazonaws.com
+        SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
+  LambdaLine:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.line
+      Runtime: !Sub ${NodeJsVer}
+      FunctionName: !Sub ${TargetEnvr}-line
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${LambdaExecutionRole}"
+      CodeUri: ../../dist/webpack/lambda
+      MemorySize: 128
+      Environment:
+        Variables:
+          ENVR: !Sub ${TargetEnvr} 
+          CHANNEL_SECRET: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-channel-secret:1}}'
+          CHANNEL_TOKEN: !Sub '{{resolve:ssm:${TargetEnvr}-sadalsuud-channel-token:1}}'
+  InvokePermissionLine:
+    Type: AWS::Lambda::Permission
+    DependsOn: [ServerlessApi, LambdaLine]
+    Properties:
+        FunctionName: !Sub ${TargetEnvr}-line
         Action: lambda:InvokeFunction
         Principal: apigateway.amazonaws.com
         SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*

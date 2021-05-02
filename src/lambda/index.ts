@@ -5,6 +5,7 @@
  * 'export-name' rule is disabled for this module.
  */
 // tslint:disable: export-name
+export { line } from 'src/lambda/line/line';
 export { sign } from 'src/lambda/sign/sign';
 export { ssm } from 'src/lambda/ssm/ssm';
 export { starPair } from 'src/lambda/starPair/starPair';

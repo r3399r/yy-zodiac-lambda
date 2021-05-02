@@ -1,5 +1,6 @@
-import { Client, TextMessage } from '@line/bot-sdk';
+import { Client, MessageAPIResponseBase, TextMessage } from '@line/bot-sdk';
 import { inject, injectable } from 'inversify';
+import { PushMessage } from 'src/model/Line';
 
 /**
  * Service class for line message
@@ -13,10 +14,13 @@ export class LineService {
     return { type: 'text', text };
   }
 
-  public async pushMessage(to: string, text: string[]): Promise<void> {
-    const messages: TextMessage[] = text.map((val: string) =>
+  public async pushMessage(
+    pushMessage: PushMessage
+  ): Promise<MessageAPIResponseBase> {
+    const messages: TextMessage[] = pushMessage.messages.map((val: string) =>
       this.textMessage(val)
     );
-    await this.client.pushMessage(to, messages);
+
+    return await this.client.pushMessage(pushMessage.to, messages);
   }
 }
