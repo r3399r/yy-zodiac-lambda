@@ -31,7 +31,6 @@ export class Validator {
     if (user.name === undefined) throw new Error('name is missing');
     if (user.phone === undefined) throw new Error('phone is missing');
     if (user.role === undefined) throw new Error('role is missing');
-    if (user.status === undefined) throw new Error('status is missing');
     if (user.role === Role.STAR_RAIN && user.joinSession === undefined)
       throw new Error('joinSession is missing');
 
@@ -41,8 +40,6 @@ export class Validator {
     if (typeof user.phone !== 'string')
       throw new Error('phone should be string');
     if (typeof user.role !== 'string') throw new Error('role should be string');
-    if (typeof user.status !== 'string')
-      throw new Error('status should be string');
     if (user.role === Role.STAR_RAIN && typeof user.joinSession !== 'string')
       throw new Error('joinSession should be string');
 

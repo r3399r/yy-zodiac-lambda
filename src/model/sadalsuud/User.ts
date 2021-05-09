@@ -8,6 +8,12 @@ export enum Role {
   VOLUNTEER = 'volunteer',
 }
 
+export enum Status {
+  IN_REVIEW = 'inReview',
+  PASS = 'pass',
+  REJECT = 'reject',
+}
+
 export type User = StarRainUser | FamilyUser | StarUser | VolunteerUser;
 
 export interface UserCommon {

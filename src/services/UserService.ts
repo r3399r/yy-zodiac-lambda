@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { Entity } from 'src/model/DbKey';
 import { DbStar } from 'src/model/sadalsuud/Star';
 import { DbStarPair } from 'src/model/sadalsuud/StarPair';
-import { Role } from 'src/model/sadalsuud/User';
+import { Role, Status } from 'src/model/sadalsuud/User';
 import { DbUser, User } from 'src/model/User';
 import { generateId } from 'src/util/generateId';
 import { Validator } from 'src/Validator';
@@ -86,9 +86,10 @@ export class UserService {
 
     const creationId: string = generateId();
     const dbUser: DbUser = {
+      ...user,
       projectEntity,
       creationId,
-      ...user,
+      status: Status.IN_REVIEW,
     };
     await this.dbService.putItem<DbUser>(dbUser);
 
