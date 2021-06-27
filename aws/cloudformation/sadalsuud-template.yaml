@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: "AWS::Serverless-2016-10-31"
 Description: >
-    celestial-service RestAPIs, API Gateway, Permissions
+    celestial-service for sadalsuud RestAPIs, API Gateway, Permissions
     
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -32,7 +32,7 @@ Resources:
           "swagger": "2.0",
           "info": {
             "version": "2020-12-12T03:14:11Z",
-            "title": !Sub "${TargetEnvr}-celestial-service-api"
+            "title": !Sub "${TargetEnvr}-celestial-sadalsuud-api"
           },
           "paths": {
             "/api/line": {
@@ -222,7 +222,7 @@ Resources:
                 },
                 "x-amazon-apigateway-integration": {
                   "httpMethod": "POST",
-                  "uri": !Sub "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:278497686406:function:${TargetEnvr}-ssm/invocations",
+                  "uri": !Sub "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:278497686406:function:${TargetEnvr}-sadalsuud-ssm/invocations",
                   "responses": {
                     "default": {
                       "statusCode": "200"
@@ -924,7 +924,7 @@ Resources:
     Properties:
       Handler: index.ssm
       Runtime: !Sub ${NodeJsVer}
-      FunctionName: !Sub ${TargetEnvr}-ssm
+      FunctionName: !Sub ${TargetEnvr}-sadalsuud-ssm
       Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${LambdaExecutionRole}"
       CodeUri: ../../dist/webpack/lambda
       MemorySize: 128
@@ -938,7 +938,7 @@ Resources:
     Type: AWS::Lambda::Permission
     DependsOn: [ServerlessApi, LambdaSsm]
     Properties:
-        FunctionName: !Sub ${TargetEnvr}-ssm
+        FunctionName: !Sub ${TargetEnvr}-sadalsuud-ssm
         Action: lambda:InvokeFunction
         Principal: apigateway.amazonaws.com
         SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
@@ -965,8 +965,8 @@ Resources:
         Principal: apigateway.amazonaws.com
         SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
 Outputs:
-  APIGatewayEndpoint:
+  SadalsuudApiEndpoint:
     Description: "API Gateway Url"
     Value: !Sub "${ServerlessApi}.execute-api.${AWS::Region}.amazonaws.com"
     Export:
-      Name: !Sub ${TargetEnvr}-APIGatewayEndpoint
+      Name: !Sub sadalsuud-${TargetEnvr}-ApiEndpoint

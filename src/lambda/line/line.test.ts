@@ -1,7 +1,7 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { PushMessage } from 'src/model/Line';
-import { LineService } from 'src/services/LineService';
+import { LineBotService } from 'src/services/LineBotService';
 import { errorOutput } from 'src/util/LambdaOutput';
 import { line } from './line';
 import { LineEvent } from './LineEvent';
@@ -12,7 +12,7 @@ import { LineEvent } from './LineEvent';
 describe('line', () => {
   let event: LineEvent;
   let lambdaContext: LambdaContext | undefined;
-  let mockLineService: any;
+  let mockLineBotService: any;
   let dummyPushMessage: PushMessage;
 
   beforeAll(() => {
@@ -26,8 +26,10 @@ describe('line', () => {
     lambdaContext = { awsRequestId: '456' };
 
     // prepare mock mockLineService
-    mockLineService = { pushMessage: jest.fn() };
-    bindings.rebind<LineService>(LineService).toConstantValue(mockLineService);
+    mockLineBotService = { pushMessage: jest.fn() };
+    bindings
+      .rebind<LineBotService>(LineBotService)
+      .toConstantValue(mockLineBotService);
   });
 
   it('POST should work', async () => {
@@ -36,7 +38,7 @@ describe('line', () => {
       body: JSON.stringify(dummyPushMessage),
     };
     await line(event, lambdaContext);
-    expect(mockLineService.pushMessage).toBeCalledTimes(1);
+    expect(mockLineBotService.pushMessage).toBeCalledTimes(1);
   });
 
   it('POST should fail with null body', async () => {

@@ -1,0 +1,267 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: "AWS::Serverless-2016-10-31"
+Description: >
+    celestial-service for altarf RestAPIs, API Gateway, Permissions
+    
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+    Function:
+        Timeout: 30  # in seconds
+Parameters:
+  LambdaExecutionRole:
+    Type: String
+    Default: celestial-service-execution-role
+    Description: The primary role in that gives the Lambda function permission to do its work.
+  NodeJsVer:
+    Type: String
+    Default: nodejs14.x
+  TargetEnvr:
+    Type: String
+    Default: dev
+    Description: The target environment for API Gateway deployment.
+Resources:
+  #######################################################
+  ##### Start of API Gateway and associated lambdas #####
+  #######################################################
+  ServerlessApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Sub ${TargetEnvr}
+      EndpointConfiguration: REGIONAL
+      DefinitionBody: {
+          "swagger": "2.0",
+          "info": {
+            "version": "2021-06-27T03:06:39Z",
+            "title": !Sub "${TargetEnvr}-celestial-altarf-api"
+          },
+          "paths": {
+            "/api/me": {
+              "get": {
+                "produces": [
+                  "application/json"
+                ],
+                "parameters": [
+                  {
+                    "name": "x-api-line",
+                    "in": "header",
+                    "required": false,
+                    "type": "string"
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    },
+                    "headers": {
+                      "Access-Control-Allow-Origin": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "uri": "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:278497686406:function:dev-me/invocations",
+                  "responses": {
+                    "default": {
+                      "statusCode": "200",
+                      "responseParameters": {
+                        "method.response.header.Access-Control-Allow-Origin": "'*'"
+                      }
+                    }
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "contentHandling": "CONVERT_TO_TEXT",
+                  "type": "aws_proxy"
+                }
+              },
+              "options": {
+                "consumes": [
+                  "application/json"
+                ],
+                "produces": [
+                  "application/json"
+                ],
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    },
+                    "headers": {
+                      "Access-Control-Allow-Origin": {
+                        "type": "string"
+                      },
+                      "Access-Control-Allow-Methods": {
+                        "type": "string"
+                      },
+                      "Access-Control-Allow-Headers": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "x-amazon-apigateway-integration": {
+                  "responses": {
+                    "default": {
+                      "statusCode": "200",
+                      "responseParameters": {
+                        "method.response.header.Access-Control-Allow-Methods": "'GET,OPTIONS'",
+                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,x-api-line'",
+                        "method.response.header.Access-Control-Allow-Origin": "'*'"
+                      }
+                    }
+                  },
+                  "requestTemplates": {
+                    "application/json": "{\"statusCode\": 200}"
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "type": "mock"
+                }
+              }
+            },
+            "/api/ssm": {
+              "get": {
+                "produces": [
+                  "application/json"
+                ],
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    }
+                  }
+                },
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "uri": !Sub "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-1:278497686406:function:${TargetEnvr}-altarf-ssm/invocations",
+                  "responses": {
+                    "default": {
+                      "statusCode": "200"
+                    }
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "contentHandling": "CONVERT_TO_TEXT",
+                  "type": "aws_proxy"
+                }
+              },
+              "options": {
+                "consumes": [
+                  "application/json"
+                ],
+                "produces": [
+                  "application/json"
+                ],
+                "responses": {
+                  "200": {
+                    "description": "200 response",
+                    "schema": {
+                      "$ref": "#/definitions/Empty"
+                    },
+                    "headers": {
+                      "Access-Control-Allow-Origin": {
+                        "type": "string"
+                      },
+                      "Access-Control-Allow-Methods": {
+                        "type": "string"
+                      },
+                      "Access-Control-Allow-Headers": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "x-amazon-apigateway-integration": {
+                  "responses": {
+                    "default": {
+                      "statusCode": "200",
+                      "responseParameters": {
+                        "method.response.header.Access-Control-Allow-Methods": "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'",
+                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+                        "method.response.header.Access-Control-Allow-Origin": "'*'"
+                      }
+                    }
+                  },
+                  "requestTemplates": {
+                    "application/json": "{\"statusCode\": 200}"
+                  },
+                  "passthroughBehavior": "when_no_match",
+                  "type": "mock"
+                }
+              }
+            }
+          },
+          "definitions": {
+            "Empty": {
+              "type": "object",
+              "title": "Empty Schema"
+            }
+          },
+          "x-amazon-apigateway-gateway-responses": {
+            "DEFAULT_5XX": {
+              "responseParameters": {
+                "gatewayresponse.header.Access-Control-Allow-Methods": "'GET,OPTIONS,POST,PUT'",
+                "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+                "gatewayresponse.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              }
+            },
+            "DEFAULT_4XX": {
+              "responseParameters": {
+                "gatewayresponse.header.Access-Control-Allow-Methods": "'GET,OPTIONS,POST,PUT'",
+                "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+                "gatewayresponse.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              }
+            }
+          }
+        }
+  LambdaMe:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.me
+      Runtime: !Sub ${NodeJsVer}
+      FunctionName: !Sub ${TargetEnvr}-me
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${LambdaExecutionRole}"
+      CodeUri: ../../dist/webpack/lambda
+      MemorySize: 128
+      Environment:
+        Variables:
+          ENVR: !Sub ${TargetEnvr}
+  InvokePermissionMe:
+    Type: AWS::Lambda::Permission
+    DependsOn: [ServerlessApi, LambdaMe]
+    Properties:
+        FunctionName: !Sub ${TargetEnvr}-me
+        Action: lambda:InvokeFunction
+        Principal: apigateway.amazonaws.com
+        SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
+  LambdaSsm:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.ssm
+      Runtime: !Sub ${NodeJsVer}
+      FunctionName: !Sub ${TargetEnvr}-altarf-ssm
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/${LambdaExecutionRole}"
+      CodeUri: ../../dist/webpack/lambda
+      MemorySize: 128
+      Environment:
+        Variables:
+          ENVR: !Sub ${TargetEnvr}
+          ALTARF_LOGIN_ID: !Sub '{{resolve:ssm:${TargetEnvr}-altarf-login-id:1}}'
+          ALTARF_LOGIN_SECRET: !Sub '{{resolve:ssm:${TargetEnvr}-altarf-login-secret:1}}'
+  InvokePermissionSsm:
+    Type: AWS::Lambda::Permission
+    DependsOn: [ServerlessApi, LambdaSsm]
+    Properties:
+        FunctionName: !Sub ${TargetEnvr}-altarf-ssm
+        Action: lambda:InvokeFunction
+        Principal: apigateway.amazonaws.com
+        SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ServerlessApi}/*
+Outputs:
+  AltarfApiEndpoint:
+    Description: "API Gateway Url"
+    Value: !Sub "${ServerlessApi}.execute-api.${AWS::Region}.amazonaws.com"
+    Export:
+      Name: !Sub altarf-${TargetEnvr}-ApiEndpoint

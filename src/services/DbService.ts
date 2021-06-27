@@ -46,7 +46,9 @@ export class DbService {
     };
     const res: GetItemOutput = await this.dynamoDb.getItem(params).promise();
 
-    return res.Item === undefined ? null : <T>Converter.unmarshall(res.Item);
+    return res.Item === undefined
+      ? null
+      : (Converter.unmarshall(res.Item) as T);
   }
 
   public async query<T>(
@@ -77,6 +79,8 @@ export class DbService {
 
     return res.Items === undefined
       ? []
-      : res.Items.map((item: AttributeMap): T => <T>Converter.unmarshall(item));
+      : res.Items.map(
+          (item: AttributeMap): T => Converter.unmarshall(item) as T
+        );
   }
 }
