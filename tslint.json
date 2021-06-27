@@ -49,6 +49,8 @@
     // causing unnatural class layouts and sometimes incompatible with static
     // initialization - try to order by some natural meaning instead
     "member-ordering": false,
+    // disable prefer-type-cast
+    "no-angle-bracket-type-assertion": true,
     // enable js libs
     "no-any": false,
     // not using backbone
@@ -86,6 +88,8 @@
     "no-unused-variable": false,
     // forces all file names to be hard-coded
     "non-literal-fs-path": false,
+    // disabled angle-bracket type case
+    "prefer-type-cast": false,
     // define type definition
     "typedef": [
       true,

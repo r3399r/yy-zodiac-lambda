@@ -1,13 +1,13 @@
 import { Client } from '@line/bot-sdk';
 import { bindings } from 'src/bindings';
 import { PushMessage } from 'src/model/Line';
-import { LineService } from './LineService';
+import { LineBotService } from './LineBotService';
 
 /**
- * Tests of the LineService class.
+ * Tests of the LineBotService class.
  */
-describe('LineService', () => {
-  let lineService: LineService;
+describe('LineBotService', () => {
+  let lineBotService: LineBotService;
   let mockClient: any;
   let dummyPushMessage: PushMessage;
 
@@ -22,13 +22,13 @@ describe('LineService', () => {
     mockClient = {};
     bindings.rebind<Client>(Client).toConstantValue(mockClient);
 
-    lineService = bindings.get<LineService>(LineService);
+    lineBotService = bindings.get<LineBotService>(LineBotService);
   });
 
   it('pushMessage should work', async () => {
     mockClient.pushMessage = jest.fn();
 
-    await lineService.pushMessage(dummyPushMessage);
+    await lineBotService.pushMessage(dummyPushMessage);
     expect(mockClient.pushMessage).toBeCalledTimes(1);
   });
 });

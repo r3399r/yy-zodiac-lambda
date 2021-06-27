@@ -24,7 +24,7 @@ export class UserService {
   private readonly validator!: Validator;
 
   public async getUserById(creationId: string): Promise<DbUser | null> {
-    const projectEntity: Entity = <Entity>process.env.ENTITY;
+    const projectEntity: Entity = process.env.ENTITY as Entity;
 
     return await this.dbService.getItem<DbUser>({
       projectEntity,
@@ -33,13 +33,13 @@ export class UserService {
   }
 
   public async getAllUsers(): Promise<DbUser[]> {
-    const projectEntity: Entity = <Entity>process.env.ENTITY;
+    const projectEntity: Entity = process.env.ENTITY as Entity;
 
     return await this.dbService.query<DbUser>(projectEntity);
   }
 
   public async getUserByLineId(lineUserId: string): Promise<DbUser> {
-    const projectEntity: Entity = <Entity>process.env.ENTITY;
+    const projectEntity: Entity = process.env.ENTITY as Entity;
     const userResult: DbUser[] = await this.dbService.query<DbUser>(
       projectEntity,
       [
@@ -81,7 +81,7 @@ export class UserService {
   }
 
   public async addUser(user: User): Promise<DbUser> {
-    const projectEntity: Entity = <Entity>process.env.ENTITY;
+    const projectEntity: Entity = process.env.ENTITY as Entity;
     await this.validator.validateUser(projectEntity, user);
 
     const creationId: string = generateId();

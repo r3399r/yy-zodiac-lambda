@@ -3,10 +3,10 @@ import { inject, injectable } from 'inversify';
 import { PushMessage } from 'src/model/Line';
 
 /**
- * Service class for line message
+ * Service class for line-bot message
  */
 @injectable()
-export class LineService {
+export class LineBotService {
   @inject(Client)
   private readonly client!: Client;
 

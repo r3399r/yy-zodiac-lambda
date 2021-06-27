@@ -2,7 +2,7 @@ import { MessageAPIResponseBase } from '@line/bot-sdk';
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { PushMessage } from 'src/model/Line';
-import { LineService } from 'src/services/LineService';
+import { LineBotService } from 'src/services/LineBotService';
 import {
   errorOutput,
   LambdaOutput,
@@ -15,7 +15,9 @@ export async function line(
   _context?: LambdaContext
 ): Promise<LambdaOutput> {
   try {
-    const lineService: LineService = bindings.get<LineService>(LineService);
+    const lineBotService: LineBotService = bindings.get<LineBotService>(
+      LineBotService
+    );
 
     let res: MessageAPIResponseBase;
 
@@ -24,7 +26,7 @@ export async function line(
         if (event.body === null) throw new Error('null body');
 
         const body: PushMessage = JSON.parse(event.body);
-        res = await lineService.pushMessage(body);
+        res = await lineBotService.pushMessage(body);
         break;
       default:
         throw new Error('unknown http method');

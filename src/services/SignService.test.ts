@@ -3,7 +3,7 @@ import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbSign, Sign } from 'src/model/sadalsuud/Sign';
 import { Validator } from 'src/Validator';
 import { DbService } from './DbService';
-import { LineService } from './LineService';
+import { LineBotService } from './LineBotService';
 import { SignService } from './SignService';
 import { UserService } from './UserService';
 
@@ -14,7 +14,7 @@ describe('SignService', () => {
   let signService: SignService;
   let mockDbService: any;
   let mockUserService: any;
-  let mockLineService: any;
+  let mockLineBotService: any;
   let mockValidator: any;
   let dummySign: Sign;
   let dummyDbSign: DbSign;
@@ -34,12 +34,14 @@ describe('SignService', () => {
   beforeEach(() => {
     mockDbService = { putItem: jest.fn(), query: jest.fn(() => [dummyDbSign]) };
     mockUserService = {};
-    mockLineService = { pushMessage: jest.fn() };
+    mockLineBotService = { pushMessage: jest.fn() };
     mockValidator = { validateSign: jest.fn() };
 
     bindings.rebind<DbService>(DbService).toConstantValue(mockDbService);
     bindings.rebind<UserService>(UserService).toConstantValue(mockUserService);
-    bindings.rebind<LineService>(LineService).toConstantValue(mockLineService);
+    bindings
+      .rebind<LineBotService>(LineBotService)
+      .toConstantValue(mockLineBotService);
     bindings.rebind<Validator>(Validator).toConstantValue(mockValidator);
 
     signService = bindings.get<SignService>(SignService);
