@@ -1,11 +1,12 @@
 import { bindings } from 'src/bindings';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbTrip, NeedFamilyAccompany, Trip } from 'src/model/sadalsuud/Trip';
-import { DbUser, Role } from 'src/model/sadalsuud/User';
+import { Role } from 'src/model/sadalsuud/User';
+import { DbUser } from 'src/model/User';
 import { Validator } from 'src/Validator';
 import { DbService } from './DbService';
 import { TripService } from './TripService';
-import { UserService } from './UserService';
+import { UserService } from './users/UserService';
 
 /**
  * Tests of the TripService class.

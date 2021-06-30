@@ -14,3 +14,4 @@ export { stars } from 'src/lambda/stars/stars';
 export { stock } from 'src/lambda/stock/stock';
 export { trips } from 'src/lambda/trips/trips';
 export { users } from 'src/lambda/users/users';
+export { student } from 'src/lambda/altarf/student';

@@ -3,8 +3,9 @@ import { LambdaContext } from 'src/lambda/LambdaContext';
 import { users } from 'src/lambda/users/users';
 import { UsersEvent } from 'src/lambda/users/UsersEvent';
 import { SadalsuudEntity } from 'src/model/DbKey';
-import { DbUser, Role } from 'src/model/sadalsuud/User';
-import { UserService } from 'src/services/UserService';
+import { Role } from 'src/model/sadalsuud/User';
+import { DbUser } from 'src/model/User';
+import { UserService } from 'src/services/users/UserService';
 import { errorOutput, successOutput } from 'src/util/LambdaOutput';
 
 /**

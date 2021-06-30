@@ -1,11 +1,11 @@
 import { inject, injectable } from 'inversify';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { DbTrip, Trip } from 'src/model/sadalsuud/Trip';
-import { DbUser } from 'src/model/sadalsuud/User';
+import { DbUser } from 'src/model/User';
 import { generateId } from 'src/util/generateId';
 import { Validator } from 'src/Validator';
 import { DbService } from './DbService';
-import { UserService } from './UserService';
+import { UserService } from './users/UserService';
 
 /**
  * Service class for trip

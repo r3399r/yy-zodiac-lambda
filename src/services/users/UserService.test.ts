@@ -4,9 +4,9 @@ import { DbStar } from 'src/model/sadalsuud/Star';
 import { DbStarPair } from 'src/model/sadalsuud/StarPair';
 import { Role } from 'src/model/sadalsuud/User';
 import { DbUser, User } from 'src/model/User';
+import { DbService } from 'src/services/DbService';
+import { StarService } from 'src/services/StarService';
 import { Validator } from 'src/Validator';
-import { DbService } from './DbService';
-import { StarService } from './StarService';
 import { UserService } from './UserService';
 
 /**

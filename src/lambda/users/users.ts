@@ -1,7 +1,7 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { DbUser, User } from 'src/model/User';
-import { UserService } from 'src/services/UserService';
+import { UserService } from 'src/services/users/UserService';
 import {
   errorOutput,
   LambdaOutput,
