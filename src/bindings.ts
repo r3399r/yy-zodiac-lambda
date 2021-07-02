@@ -9,6 +9,7 @@ import { MeService } from 'src/services/MeService';
 import { SignService } from 'src/services/SignService';
 import { SsmService } from 'src/services/SsmService';
 import { StarService } from 'src/services/StarService';
+import { StockService } from 'src/services/StockService';
 import { TripService } from 'src/services/TripService';
 import { UserService } from 'src/services/UserService';
 import { Validator } from 'src/Validator';
@@ -22,6 +23,7 @@ container.bind<MeService>(MeService).toSelf();
 container.bind<SignService>(SignService).toSelf();
 container.bind<SsmService>(SsmService).toSelf();
 container.bind<StarService>(StarService).toSelf();
+container.bind<StockService>(StockService).toSelf();
 container.bind<TripService>(TripService).toSelf();
 container.bind<UserService>(UserService).toSelf();
 
