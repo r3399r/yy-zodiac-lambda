@@ -12,6 +12,7 @@ import { StarService } from 'src/services/StarService';
 import { StockService } from 'src/services/StockService';
 import { TripService } from 'src/services/TripService';
 import { AltarfUserService } from 'src/services/users/AltarfUserService';
+import { SadalsuudUserService } from 'src/services/users/SadalsuudUserService';
 import { UserService } from 'src/services/users/UserService';
 import { Validator } from 'src/Validator';
 
@@ -27,6 +28,7 @@ container.bind<StarService>(StarService).toSelf();
 container.bind<StockService>(StockService).toSelf();
 container.bind<TripService>(TripService).toSelf();
 container.bind<UserService>(UserService).toSelf();
+container.bind<SadalsuudUserService>(SadalsuudUserService).toSelf();
 container.bind<AltarfUserService>(AltarfUserService).toSelf();
 
 container.bind<Client>(Client).toDynamicValue(

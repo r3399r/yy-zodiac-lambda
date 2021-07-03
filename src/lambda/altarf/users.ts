@@ -1,7 +1,7 @@
 import { bindings } from 'src/bindings';
 import { LambdaContext } from 'src/lambda/LambdaContext';
 import { LambdaEvent } from 'src/lambda/LambdaEvent';
-import { Student } from 'src/model/altarf/User';
+import { User } from 'src/model/altarf/User';
 import { DbUser } from 'src/model/User';
 import { AltarfUserService } from 'src/services/users/AltarfUserService';
 import {
@@ -10,7 +10,7 @@ import {
   successOutput,
 } from 'src/util/LambdaOutput';
 
-export async function student(
+export async function users(
   event: LambdaEvent,
   _context?: LambdaContext
 ): Promise<LambdaOutput> {
@@ -25,8 +25,8 @@ export async function student(
       case 'POST':
         if (event.body === null) throw new Error('null body');
 
-        const newStudent: Student = JSON.parse(event.body);
-        res = await altarfUserService.addStudent(newStudent);
+        const newUser: User = JSON.parse(event.body);
+        res = await altarfUserService.addUser(newUser);
         break;
       default:
         throw new Error('unknown http method');

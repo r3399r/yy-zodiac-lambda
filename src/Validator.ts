@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Role as AltarfRole, User as AltarfUser } from 'src/model/altarf/User';
-import { AltarfEntity, DbKey, Entity, SadalsuudEntity } from 'src/model/DbKey';
+import { AltarfEntity, DbKey, SadalsuudEntity } from 'src/model/DbKey';
 import { DbStar, Star } from 'src/model/sadalsuud/Star';
 import { StarPair } from 'src/model/sadalsuud/StarPair';
 import { DbTrip, Trip } from 'src/model/sadalsuud/Trip';
@@ -8,7 +8,7 @@ import {
   Role as SadalsuudRole,
   User as SadalsuudUser,
 } from 'src/model/sadalsuud/User';
-import { DbUser, User } from 'src/model/User';
+import { DbUser } from 'src/model/User';
 import { DbSign, Sign } from './model/sadalsuud/Sign';
 import { DbService } from './services/DbService';
 
@@ -30,7 +30,7 @@ export class Validator {
     return res;
   }
 
-  private async validateSadalsuudUser(user: SadalsuudUser): Promise<void> {
+  public async validateSadalsuudUser(user: SadalsuudUser): Promise<void> {
     if (user.lineUserId === undefined) throw new Error('lineUserId is missing');
     if (user.name === undefined) throw new Error('name is missing');
     if (user.phone === undefined) throw new Error('phone is missing');
@@ -65,7 +65,7 @@ export class Validator {
     if (dbUser.length !== 0) throw new Error('user already exists');
   }
 
-  private async validateAltarfUser(user: AltarfUser): Promise<void> {
+  public async validateAltarfUser(user: AltarfUser): Promise<void> {
     if (user.lineUserId === undefined) throw new Error('lineUserId is missing');
     if (user.name === undefined) throw new Error('name is missing');
     if (user.role === undefined) throw new Error('role is missing');
@@ -82,6 +82,9 @@ export class Validator {
     )
       throw new Error('enrollmentYear should be number');
 
+    if (user.role !== AltarfRole.STUDENT && user.role !== AltarfRole.TEACHER)
+      throw new Error('role does not exist.');
+
     const dbUser: DbUser[] = await this.dbService.query<DbUser>(
       AltarfEntity.user,
       [
@@ -92,13 +95,6 @@ export class Validator {
       ]
     );
     if (dbUser.length !== 0) throw new Error('user already exists');
-  }
-
-  public async validateUser(projectEntity: Entity, user: User): Promise<void> {
-    if (projectEntity === SadalsuudEntity.user)
-      await this.validateSadalsuudUser(user as SadalsuudUser);
-    if (projectEntity === AltarfEntity.user)
-      await this.validateAltarfUser(user as AltarfUser);
   }
 
   public async validateSign(sign: Sign): Promise<void> {

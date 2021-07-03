@@ -5,7 +5,7 @@ import { UsersEvent } from 'src/lambda/users/UsersEvent';
 import { SadalsuudEntity } from 'src/model/DbKey';
 import { Role } from 'src/model/sadalsuud/User';
 import { DbUser } from 'src/model/User';
-import { UserService } from 'src/services/users/UserService';
+import { SadalsuudUserService } from 'src/services/users/SadalsuudUserService';
 import { errorOutput, successOutput } from 'src/util/LambdaOutput';
 
 /**
@@ -35,7 +35,9 @@ describe('users', () => {
 
     // prepare mock mockUserService
     mockUserService = {};
-    bindings.rebind<UserService>(UserService).toConstantValue(mockUserService);
+    bindings
+      .rebind<SadalsuudUserService>(SadalsuudUserService)
+      .toConstantValue(mockUserService);
 
     mockUserService.getWholeUserInfo = jest.fn(() => dummyUser);
     mockUserService.addUser = jest.fn();
