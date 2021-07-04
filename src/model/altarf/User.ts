@@ -10,8 +10,9 @@ type UserCommon = {
   name: string;
 };
 
-type Student = UserCommon & {
+export type Student = UserCommon & {
   role: Role.STUDENT;
+  teacherId?: string[];
 };
 
 type Teacher = UserCommon & {

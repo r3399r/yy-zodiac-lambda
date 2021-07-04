@@ -67,7 +67,7 @@ describe('UserService', () => {
     mockDbService.query = jest.fn(() => []);
 
     await expect(userService.getUserByLineId('abc')).rejects.toThrow(
-      'user does not exist'
+      'user abc does not exist'
     );
   });
 

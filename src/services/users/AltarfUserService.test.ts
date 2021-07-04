@@ -127,4 +127,50 @@ describe('AltarfUserService', () => {
       })
     ).rejects.toThrow('unexpected role');
   });
+
+  it('addStudents should work', async () => {
+    mockUserService.getUserByLineId = jest.fn((id: string) =>
+      id === 'a' ? dummyDbTeacher : dummyDbStudent
+    );
+
+    await altarfUserService.addStudents('a', ['b', 'c']);
+    expect(mockUserService.getUserByLineId).toBeCalledTimes(3);
+    expect(mockUserService.updateUser).toBeCalledTimes(3);
+
+    mockUserService.getUserByLineId = jest.fn((id: string) =>
+      id === 'a'
+        ? { ...dummyDbTeacher, studentId: ['old'] }
+        : { ...dummyDbStudent, teacherId: ['old'] }
+    );
+
+    await altarfUserService.addStudents('a', ['b', 'c']);
+  });
+
+  it('addStudents should fail when wrong role', async () => {
+    mockUserService.getUserByLineId = jest.fn(() => dummyDbStudent);
+    await expect(
+      altarfUserService.addStudents('a', ['b', 'c'])
+    ).rejects.toThrow('role of a is not teacher');
+
+    mockUserService.getUserByLineId = jest.fn(() => dummyDbTeacher);
+    await expect(
+      altarfUserService.addStudents('a', ['b', 'c'])
+    ).rejects.toThrow('role of b is not student');
+  });
+
+  it('addStudents should fail when target exists', async () => {
+    mockUserService.getUserByLineId = jest.fn((id: string) =>
+      id === 'a' ? { ...dummyDbTeacher, studentId: ['b'] } : dummyDbStudent
+    );
+    await expect(
+      altarfUserService.addStudents('a', ['b', 'c'])
+    ).rejects.toThrow('student b already exist');
+
+    mockUserService.getUserByLineId = jest.fn((id: string) =>
+      id === 'a' ? dummyDbTeacher : { ...dummyDbStudent, teacherId: ['a'] }
+    );
+    await expect(
+      altarfUserService.addStudents('a', ['b', 'c'])
+    ).rejects.toThrow('teacher a already exist in student b');
+  });
 });

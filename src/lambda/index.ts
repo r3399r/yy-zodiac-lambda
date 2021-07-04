@@ -16,3 +16,4 @@ export { trips } from 'src/lambda/trips/trips';
 export { users } from 'src/lambda/users/users';
 export { users as altarfUsers } from 'src/lambda/altarf/users/users';
 export { userSwitch } from 'src/lambda/altarf/userSwitch/userSwitch';
+export { myStudents } from 'src/lambda/altarf/myStudents/myStudents';

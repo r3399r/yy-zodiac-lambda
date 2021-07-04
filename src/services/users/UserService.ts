@@ -44,7 +44,7 @@ export class UserService {
     if (userResult.length === 0) {
       console.info('user not found:', lineUserId);
 
-      throw new Error('user does not exist');
+      throw new Error(`user ${lineUserId} does not exist`);
     }
 
     return userResult[0];
