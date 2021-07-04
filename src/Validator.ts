@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { User as AltarfUser } from 'src/model/altarf/User';
+import { UpdateUserParams, User as AltarfUser } from 'src/model/altarf/User';
 import { AltarfEntity, DbKey, SadalsuudEntity } from 'src/model/DbKey';
 import { DbStar, Star } from 'src/model/sadalsuud/Star';
 import { StarPair } from 'src/model/sadalsuud/StarPair';
@@ -83,6 +83,18 @@ export class Validator {
       ]
     );
     if (dbUser.length !== 0) throw new Error('user already exists');
+  }
+
+  public validateUpdateUserParams(params: UpdateUserParams): void {
+    if (params.name !== undefined && typeof params.name !== 'string')
+      throw new Error('name should be string');
+    if (
+      params.spreadsheetId !== undefined &&
+      typeof params.spreadsheetId !== 'string'
+    )
+      throw new Error('spreadsheetId should be string');
+    if (params.classroom !== undefined && typeof params.classroom !== 'string')
+      throw new Error('classroom should be string');
   }
 
   public async validateSign(sign: Sign): Promise<void> {

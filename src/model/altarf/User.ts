@@ -20,3 +20,9 @@ type Teacher = UserCommon & {
   spreadsheetId?: string;
   classroom?: string;
 };
+
+export type UpdateUserParams = {
+  name?: string;
+  spreadsheetId?: string;
+  classroom?: string;
+};
