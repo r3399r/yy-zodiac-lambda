@@ -21,7 +21,6 @@ describe('AltarfUserService', () => {
       lineUserId: 'test',
       role: Role.STUDENT,
       name: 'testName',
-      enrollmentYear: 999,
     };
     dummyDbUser = {
       projectEntity: AltarfEntity.user,
@@ -33,6 +32,8 @@ describe('AltarfUserService', () => {
   beforeEach(() => {
     mockUserService = {
       addUser: jest.fn(() => dummyDbUser),
+      updateUser: jest.fn(() => dummyDbUser),
+      getUserByLineId: jest.fn(() => dummyDbUser),
     };
     mockValidator = { validateAltarfUser: jest.fn() };
 
@@ -42,7 +43,7 @@ describe('AltarfUserService', () => {
     altarfUserService = bindings.get<AltarfUserService>(AltarfUserService);
   });
 
-  it('addUser with role student should work', async () => {
+  it('addUser should work', async () => {
     const res: DbUser = await altarfUserService.addUser(dummyUser);
 
     expect(res).toStrictEqual(dummyDbUser);
@@ -50,13 +51,13 @@ describe('AltarfUserService', () => {
     expect(mockUserService.addUser).toBeCalledTimes(1);
   });
 
-  it('addUser with role teacher should work', async () => {
-    const res: DbUser = await altarfUserService.addUser({
-      lineUserId: 'test',
-      role: Role.TEACHER,
-      name: 'testName2',
-    });
+  it('switchRole should work', async () => {
+    await altarfUserService.switchRole('123');
 
-    expect(res).toStrictEqual(dummyDbUser);
+    expect(mockUserService.getUserByLineId).toBeCalledTimes(1);
+    expect(mockUserService.updateUser).toBeCalledTimes(1);
+
+    dummyDbUser.role = Role.TEACHER;
+    await altarfUserService.switchRole('123');
   });
 });

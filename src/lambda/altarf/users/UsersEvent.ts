@@ -1,4 +1,4 @@
-export interface LambdaEvent {
+export interface UsersEvent {
   httpMethod: string;
   body: string | null;
 }

@@ -1,6 +1,6 @@
 import { bindings } from 'src/bindings';
+import { UsersEvent } from 'src/lambda/altarf/users/UsersEvent';
 import { LambdaContext } from 'src/lambda/LambdaContext';
-import { LambdaEvent } from 'src/lambda/LambdaEvent';
 import { User } from 'src/model/altarf/User';
 import { DbUser } from 'src/model/User';
 import { AltarfUserService } from 'src/services/users/AltarfUserService';
@@ -11,7 +11,7 @@ import {
 } from 'src/util/LambdaOutput';
 
 export async function users(
-  event: LambdaEvent,
+  event: UsersEvent,
   _context?: LambdaContext
 ): Promise<LambdaOutput> {
   try {

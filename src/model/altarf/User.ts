@@ -11,10 +11,12 @@ type UserCommon = {
 };
 
 type Student = UserCommon & {
-  enrollmentYear: number;
   role: Role.STUDENT;
 };
 
 type Teacher = UserCommon & {
   role: Role.TEACHER;
+  studentId?: string[];
+  spreadsheetId?: string;
+  classroom?: string;
 };

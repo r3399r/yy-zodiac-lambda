@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { Role as AltarfRole, User as AltarfUser } from 'src/model/altarf/User';
+import { User as AltarfUser } from 'src/model/altarf/User';
 import { AltarfEntity, DbKey, SadalsuudEntity } from 'src/model/DbKey';
 import { DbStar, Star } from 'src/model/sadalsuud/Star';
 import { StarPair } from 'src/model/sadalsuud/StarPair';
@@ -68,22 +68,10 @@ export class Validator {
   public async validateAltarfUser(user: AltarfUser): Promise<void> {
     if (user.lineUserId === undefined) throw new Error('lineUserId is missing');
     if (user.name === undefined) throw new Error('name is missing');
-    if (user.role === undefined) throw new Error('role is missing');
-    if (user.role === AltarfRole.STUDENT && user.enrollmentYear === undefined)
-      throw new Error('enrollmentYear is missing');
 
     if (typeof user.lineUserId !== 'string')
       throw new Error('lineUserId should be string');
     if (typeof user.name !== 'string') throw new Error('name should be string');
-    if (typeof user.role !== 'string') throw new Error('role should be string');
-    if (
-      user.role === AltarfRole.STUDENT &&
-      typeof user.enrollmentYear !== 'number'
-    )
-      throw new Error('enrollmentYear should be number');
-
-    if (user.role !== AltarfRole.STUDENT && user.role !== AltarfRole.TEACHER)
-      throw new Error('role does not exist.');
 
     const dbUser: DbUser[] = await this.dbService.query<DbUser>(
       AltarfEntity.user,

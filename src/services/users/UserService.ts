@@ -63,4 +63,10 @@ export class UserService {
 
     return dbUser;
   }
+
+  public async updateUser(dbUser: DbUser): Promise<DbUser> {
+    await this.dbService.putItem<DbUser>(dbUser);
+
+    return dbUser;
+  }
 }
