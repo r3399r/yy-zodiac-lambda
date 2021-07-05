@@ -1,40 +1,33 @@
 import { bindings } from 'src/bindings';
+import { UserSwitchEvent } from 'src/lambda/altarf/userSwitch/UserSwitchEvent';
 import { LambdaContext } from 'src/lambda/LambdaContext';
-import { User } from 'src/model/sadalsuud/User';
 import { DbUser } from 'src/model/User';
-import { SadalsuudUserService } from 'src/services/users/SadalsuudUserService';
+import { AltarfUserService } from 'src/services/users/AltarfUserService';
 import {
   errorOutput,
   LambdaOutput,
   successOutput,
 } from 'src/util/LambdaOutput';
-import { UsersEvent } from './UsersEvent';
 
-export async function users(
-  event: UsersEvent,
+export async function userSwitch(
+  event: UserSwitchEvent,
   _context?: LambdaContext
 ): Promise<LambdaOutput> {
   try {
-    const userService: SadalsuudUserService = bindings.get<SadalsuudUserService>(
-      SadalsuudUserService
+    const altarfUserService: AltarfUserService = bindings.get<AltarfUserService>(
+      AltarfUserService
     );
 
-    let res: DbUser | null;
+    let res: DbUser;
 
     switch (event.httpMethod) {
-      case 'GET':
+      case 'PUT':
         if (event.pathParameters === null)
           throw new Error('null path parameter');
         if (event.pathParameters.id === undefined)
           throw new Error('missing user id');
 
-        res = await userService.getWholeUserInfo(event.pathParameters.id);
-        break;
-      case 'POST':
-        if (event.body === null) throw new Error('null body');
-
-        const user: User = JSON.parse(event.body);
-        res = await userService.addUser(user);
+        res = await altarfUserService.switchRole(event.pathParameters.id);
         break;
       default:
         throw new Error('unknown http method');
