@@ -1,9 +1,12 @@
 import { inject, injectable } from 'inversify';
+import { bindings } from 'src/bindings';
 import { Role, Student, UpdateUserParams, User } from 'src/model/altarf/User';
 import { DbKey } from 'src/model/DbKey';
 import { DbUser } from 'src/model/User';
 import { UserService } from 'src/services/users/UserService';
 import { Validator } from 'src/Validator';
+
+export const spreadsheetBindingId: symbol = Symbol('spreadsheetId');
 
 /**
  * Service class for Altarf users
@@ -15,6 +18,26 @@ export class AltarfUserService {
 
   @inject(Validator)
   private readonly validator!: Validator;
+
+  public async bindSpreadsheetId(lineUserId: string): Promise<void> {
+    const user = await this.userService.getUserByLineId(lineUserId);
+
+    if (user.role !== Role.TEACHER)
+      throw new Error(`role of ${lineUserId} is not teacher`);
+    if (user.spreadsheetId === undefined)
+      throw new Error(
+        `role of ${lineUserId} does not configure spread sheet id`
+      );
+
+    if (bindings.isBound(spreadsheetBindingId) === false)
+      bindings
+        .bind<string>(spreadsheetBindingId)
+        .toConstantValue(user.spreadsheetId);
+    else
+      bindings
+        .rebind<string>(spreadsheetBindingId)
+        .toConstantValue(user.spreadsheetId);
+  }
 
   public async addUser(user: User): Promise<DbUser> {
     await this.validator.validateAltarfUser(user);
