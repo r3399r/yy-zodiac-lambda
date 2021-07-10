@@ -17,4 +17,4 @@ export { users } from 'src/lambda/users/users';
 export { users as altarfUsers } from 'src/lambda/altarf/users/users';
 export { userSwitch } from 'src/lambda/altarf/userSwitch/userSwitch';
 export { myStudents } from 'src/lambda/altarf/myStudents/myStudents';
-export { quizValidate } from 'src/lambda/altarf/quizValidate/quizValidate';
+export { quiz } from 'src/lambda/altarf/quiz/quiz';

@@ -4,6 +4,7 @@ import {
   QuizValidateResponse,
   QuizValidateResponseStatus,
 } from 'src/model/altarf/Quiz';
+import { DbService } from './DbService';
 import { GoogleSheetService } from './GoogleSheetService';
 import { QuizService } from './QuizService';
 import { AltarfUserService } from './users/AltarfUserService';
@@ -15,11 +16,23 @@ describe('QuizService', () => {
   let quizService: QuizService;
   let mockGooglesheetService: any;
   let mockAltarfUserService: any;
-  let dummyQuestionRow: unknown[];
-  let dummyResult: QuizValidateResponse;
+  let mockDbService: any;
+  let dummyGoodQuestionRow: unknown[];
+  let dummyGoodResult: QuizValidateResponse;
+  let dummyBadQuestionRow: unknown[];
+  let dummyBadResult: QuizValidateResponse;
 
   beforeAll(() => {
-    dummyQuestionRow = [
+    dummyGoodQuestionRow = [
+      {
+        question: 'a',
+        type: QuestionType.SINGLE,
+        options: '1',
+        answer: '1',
+        field: 'N',
+      },
+    ];
+    dummyBadQuestionRow = [
       {
         question: 'a',
         type: QuestionType.SINGLE,
@@ -43,15 +56,20 @@ describe('QuizService', () => {
         field: 'N',
       },
     ];
-    dummyResult = {
+    dummyGoodResult = {
+      status: QuizValidateResponseStatus.OK,
+      content: [],
+    };
+    dummyBadResult = {
       status: QuizValidateResponseStatus.NEED_MORE_WORK,
       content: [],
     };
   });
 
   beforeEach(() => {
-    mockGooglesheetService = { getRows: jest.fn(() => dummyQuestionRow) };
+    mockGooglesheetService = { getRows: jest.fn(() => dummyGoodQuestionRow) };
     mockAltarfUserService = { bindSpreadsheetId: jest.fn() };
+    mockDbService = { putItem: jest.fn() };
 
     bindings
       .rebind<GoogleSheetService>(GoogleSheetService)
@@ -59,12 +77,19 @@ describe('QuizService', () => {
     bindings
       .rebind<AltarfUserService>(AltarfUserService)
       .toConstantValue(mockAltarfUserService);
+    bindings.rebind<DbService>(DbService).toConstantValue(mockDbService);
 
     quizService = bindings.get<QuizService>(QuizService);
   });
 
-  it('validate should work', async () => {
-    const res = await quizService.validate('lineId', 'sheetId');
-    expect(res.status).toBe(dummyResult.status);
+  it('save should return OK', async () => {
+    const res = await quizService.save('lineId', 'sheetId', {});
+    expect(res.status).toBe(dummyGoodResult.status);
+  });
+
+  it('save should return NEED_MORE_WORK', async () => {
+    mockGooglesheetService.getRows = jest.fn(() => dummyBadQuestionRow);
+    const res = await quizService.save('lineId', 'sheetId', {});
+    expect(res.status).toBe(dummyBadResult.status);
   });
 });

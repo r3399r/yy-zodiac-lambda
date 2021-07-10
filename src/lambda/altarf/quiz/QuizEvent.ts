@@ -1,4 +1,4 @@
-export interface QuizValidateEvent {
+export interface QuizEvent {
   httpMethod: string;
   pathParameters: {
     id?: string;
@@ -6,4 +6,5 @@ export interface QuizValidateEvent {
   headers: {
     'x-api-line'?: string;
   };
+  body: string | null;
 }

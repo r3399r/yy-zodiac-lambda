@@ -1,6 +1,7 @@
 import { bindings } from 'src/bindings';
-import { QuizValidateEvent } from 'src/lambda/altarf/quizValidate/QuizValidateEvent';
+import { QuizEvent } from 'src/lambda/altarf/quiz/QuizEvent';
 import { LambdaContext } from 'src/lambda/LambdaContext';
+import { QuizValidateResponse, SaveQuizParams } from 'src/model/altarf/Quiz';
 import { LineLoginService } from 'src/services/LineLoginService';
 import { QuizService } from 'src/services/QuizService';
 import {
@@ -9,8 +10,8 @@ import {
   successOutput,
 } from 'src/util/LambdaOutput';
 
-export async function quizValidate(
-  event: QuizValidateEvent,
+export async function quiz(
+  event: QuizEvent,
   _context?: LambdaContext
 ): Promise<LambdaOutput> {
   try {
@@ -19,24 +20,27 @@ export async function quizValidate(
       LineLoginService
     );
 
-    let res: any;
+    let res: QuizValidateResponse;
 
     switch (event.httpMethod) {
-      case 'GET':
+      case 'POST':
         if (event.headers['x-api-line'] === undefined)
           throw new Error('missing line authentication token');
         if (event.pathParameters === null)
           throw new Error('null path parameter');
         if (event.pathParameters.id === undefined)
           throw new Error('missing user id');
+        if (event.body === null) throw new Error('null body');
 
         const lineUser = await lineLoginService.verifyAndGetUser(
           event.headers['x-api-line']
         );
+        const params: SaveQuizParams = JSON.parse(event.body);
 
-        res = await quizService.validate(
+        res = await quizService.save(
           lineUser.userId,
-          event.pathParameters.id
+          event.pathParameters.id,
+          params
         );
         break;
       default:

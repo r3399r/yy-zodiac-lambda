@@ -1,4 +1,5 @@
 import { GoogleSpreadsheetRow } from 'google-spreadsheet';
+import { DbKey } from 'src/model/DbKey';
 
 export enum QuestionType {
   SINGLE = 'S',
@@ -21,11 +22,23 @@ export type QuizValidateResponse = {
   content: QuizValidate[];
 };
 
-export type QuestionRow = GoogleSpreadsheetRow & {
+export type Quiz = {
   question?: string;
   type?: QuestionType;
   options?: string;
   answer?: string;
   image?: string;
   field?: string;
+};
+
+export type QuizRow = GoogleSpreadsheetRow & Quiz;
+
+export type DbQuiz = DbKey & {
+  owner: string;
+  label: string;
+  questions: Quiz[];
+};
+
+export type SaveQuizParams = {
+  label?: string;
 };

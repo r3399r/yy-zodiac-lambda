@@ -1,14 +1,20 @@
 import { inject, injectable } from 'inversify';
 import { bindings } from 'src/bindings';
 import {
-  QuestionRow,
+  DbQuiz,
   QuestionType,
+  Quiz,
+  QuizRow,
   QuizValidate,
   QuizValidateResponse,
   QuizValidateResponseStatus,
+  SaveQuizParams,
 } from 'src/model/altarf/Quiz';
+import { Entity } from 'src/model/DbKey';
 import { GoogleSheetService } from 'src/services/GoogleSheetService';
 import { AltarfUserService } from 'src/services/users/AltarfUserService';
+import { generateId } from 'src/util/generateId';
+import { DbService } from './DbService';
 
 /**
  * Service class for quiz in google spreadsheet
@@ -18,19 +24,56 @@ export class QuizService {
   @inject(AltarfUserService)
   private readonly userService!: AltarfUserService;
 
-  public async validate(
+  @inject(DbService)
+  private readonly dbService!: DbService;
+
+  public async save(
     lineUserId: string,
-    sheetId: string
+    sheetId: string,
+    params: SaveQuizParams
   ): Promise<QuizValidateResponse> {
     await this.userService.bindSpreadsheetId(lineUserId);
 
     const googleSheetService = bindings.get<GoogleSheetService>(
       GoogleSheetService
     );
-    const rows = (await googleSheetService.getRows(sheetId)) as QuestionRow[];
+    const rows = (await googleSheetService.getRows(sheetId)) as QuizRow[];
 
+    const validateResult = this.validate(rows);
+    if (validateResult.status === QuizValidateResponseStatus.NEED_MORE_WORK)
+      return validateResult;
+
+    const questions = rows.map(
+      (v: QuizRow): Quiz => {
+        return {
+          question: v.question,
+          type: v.type,
+          options: v.options,
+          answer: v.answer,
+          image: v.image,
+          field: v.field,
+        };
+      }
+    );
+
+    const projectEntity: Entity = process.env.QUIZ_ENTITY as Entity;
+    const creationId: string = generateId();
+    const dbQuiz: DbQuiz = {
+      projectEntity,
+      creationId,
+      owner: lineUserId,
+      label: params.label === undefined ? creationId : params.label,
+      questions,
+    };
+
+    await this.dbService.putItem<DbQuiz>(dbQuiz);
+
+    return validateResult;
+  }
+
+  private validate(quizRows: QuizRow[]): QuizValidateResponse {
     const badQuestions: QuizValidate[] = [];
-    rows.forEach((v: QuestionRow, i: number) => {
+    quizRows.forEach((v: QuizRow, i: number) => {
       const line = i + 1;
       if (v.question === undefined || v.question === '')
         badQuestions.push({ line, reason: 'empty question' });
