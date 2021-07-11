@@ -21,10 +21,6 @@ export class SadalsuudUserService {
   @inject(Validator)
   private readonly validator!: Validator;
 
-  public async getUserById(creationId: string): Promise<DbUser | null> {
-    return await this.userService.getUserById(creationId);
-  }
-
   public async getAllUsers(): Promise<DbUser[]> {
     return await this.userService.getAllUsers();
   }

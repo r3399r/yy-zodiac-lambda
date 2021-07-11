@@ -4,6 +4,9 @@ import {
   QuizValidateResponse,
   QuizValidateResponseStatus,
 } from 'src/model/altarf/Quiz';
+import { DbTeacherStudentPair, Role } from 'src/model/altarf/User';
+import { AltarfEntity } from 'src/model/DbKey';
+import { DbUser } from 'src/model/User';
 import { DbService } from './DbService';
 import { GoogleSheetService } from './GoogleSheetService';
 import { QuizService } from './QuizService';
@@ -21,8 +24,18 @@ describe('QuizService', () => {
   let dummyGoodResult: QuizValidateResponse;
   let dummyBadQuestionRow: unknown[];
   let dummyBadResult: QuizValidateResponse;
+  let dummyDbTeacher: DbUser;
+  let dummyDbStudent: DbUser;
+  let dummyDbTeacherStudentPair: DbTeacherStudentPair;
 
   beforeAll(() => {
+    dummyDbTeacherStudentPair = {
+      projectEntity: AltarfEntity.teacherStudentPair,
+      creationId: 'id',
+      teacherId: 'teacher',
+      studentId: 'student',
+      quizId: ['old'],
+    };
     dummyGoodQuestionRow = [
       {
         question: 'a',
@@ -64,12 +77,34 @@ describe('QuizService', () => {
       status: QuizValidateResponseStatus.NEED_MORE_WORK,
       content: [],
     };
+    dummyDbTeacher = {
+      projectEntity: AltarfEntity.user,
+      creationId: 'teacherId',
+      lineUserId: 'lineId',
+      name: 'tester',
+      role: Role.TEACHER,
+      spreadsheetId: '12345',
+    };
+    dummyDbStudent = {
+      projectEntity: AltarfEntity.user,
+      creationId: 'studentId',
+      lineUserId: 'lineId',
+      name: 'student',
+      role: Role.STUDENT,
+    };
   });
 
   beforeEach(() => {
     mockGooglesheetService = { getRows: jest.fn(() => dummyGoodQuestionRow) };
-    mockAltarfUserService = { bindSpreadsheetId: jest.fn() };
-    mockDbService = { putItem: jest.fn() };
+    mockAltarfUserService = {
+      getUserByLineId: jest.fn(() => dummyDbTeacher),
+      getUserById: jest.fn(() => dummyDbStudent),
+    };
+    mockDbService = {
+      putItem: jest.fn(),
+      getItem: jest.fn(),
+      query: jest.fn(() => [dummyDbTeacherStudentPair]),
+    };
 
     bindings
       .rebind<GoogleSheetService>(GoogleSheetService)
@@ -91,5 +126,13 @@ describe('QuizService', () => {
     mockGooglesheetService.getRows = jest.fn(() => dummyBadQuestionRow);
     const res = await quizService.save('lineId', 'sheetId', {});
     expect(res.status).toBe(dummyBadResult.status);
+  });
+
+  it('assign should work', async () => {
+    await quizService.assign('lineId', {
+      studentId: ['student'],
+      quizId: 'quiz',
+    });
+    expect(mockDbService.putItem).toHaveBeenCalledTimes(1);
   });
 });

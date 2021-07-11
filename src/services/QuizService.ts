@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { bindings } from 'src/bindings';
 import {
+  AssignQuizParams,
   DbQuiz,
   QuestionType,
   Quiz,
@@ -10,11 +11,15 @@ import {
   QuizValidateResponseStatus,
   SaveQuizParams,
 } from 'src/model/altarf/Quiz';
-import { Entity } from 'src/model/DbKey';
+import { DbTeacherStudentPair, Role } from 'src/model/altarf/User';
+import { AltarfEntity } from 'src/model/DbKey';
+import { DbUser } from 'src/model/User';
 import { GoogleSheetService } from 'src/services/GoogleSheetService';
 import { AltarfUserService } from 'src/services/users/AltarfUserService';
 import { generateId } from 'src/util/generateId';
 import { DbService } from './DbService';
+
+export const spreadsheetBindingId: symbol = Symbol('spreadsheetId');
 
 /**
  * Service class for quiz in google spreadsheet
@@ -27,12 +32,74 @@ export class QuizService {
   @inject(DbService)
   private readonly dbService!: DbService;
 
+  private async getQuiz(quizId: string): Promise<DbQuiz> {
+    const dbQuiz = await this.dbService.getItem<DbQuiz>({
+      projectEntity: AltarfEntity.quiz,
+      creationId: quizId,
+    });
+    if (dbQuiz === null) throw new Error(`quiz ${quizId} does not exist`);
+
+    return dbQuiz;
+  }
+
+  public async assign(
+    lineUserId: string,
+    params: AssignQuizParams
+  ): Promise<void> {
+    const teacher = await this.userService.getUserByLineId(lineUserId);
+    if (teacher.role !== Role.TEACHER)
+      throw new Error(`role of ${lineUserId} is not teacher`);
+
+    await this.getQuiz(params.quizId);
+
+    const dbTeacherStudentPair = await Promise.all(
+      params.studentId.map(async (id: string) => {
+        const user = await this.userService.getUserById(id);
+        if (user.role !== Role.STUDENT)
+          throw new Error(`role of ${id} is not student`);
+
+        const pair = await this.dbService.query<DbTeacherStudentPair>(
+          AltarfEntity.teacherStudentPair,
+          [
+            { key: 'teacherId', value: teacher.creationId },
+            { key: 'studentId', value: id },
+          ]
+        );
+        if (pair.length === 0) throw new Error('pair does not exist');
+        if (pair.length > 1) throw new Error('pair should be unique');
+
+        if (
+          pair[0].quizId !== undefined &&
+          pair[0].quizId.includes(params.quizId)
+        )
+          throw new Error(
+            `quiz ${params.quizId} has already assigned to student ${id}`
+          );
+
+        return pair[0];
+      })
+    );
+
+    await Promise.all(
+      dbTeacherStudentPair.map(async (pair: DbTeacherStudentPair) => {
+        await this.dbService.putItem<DbTeacherStudentPair>({
+          ...pair,
+          quizId:
+            pair.quizId === undefined
+              ? [params.quizId]
+              : [...pair.quizId, params.quizId],
+        });
+      })
+    );
+  }
+
   public async save(
     lineUserId: string,
     sheetId: string,
     params: SaveQuizParams
   ): Promise<QuizValidateResponse> {
-    await this.userService.bindSpreadsheetId(lineUserId);
+    const dbUser = await this.userService.getUserByLineId(lineUserId);
+    this.bindSpreadsheetId(dbUser);
 
     const googleSheetService = bindings.get<GoogleSheetService>(
       GoogleSheetService
@@ -56,12 +123,11 @@ export class QuizService {
       }
     );
 
-    const projectEntity: Entity = process.env.QUIZ_ENTITY as Entity;
     const creationId: string = generateId();
     const dbQuiz: DbQuiz = {
-      projectEntity,
+      projectEntity: AltarfEntity.quiz,
       creationId,
-      owner: lineUserId,
+      owner: dbUser.creationId,
       label: params.label === undefined ? creationId : params.label,
       questions,
     };
@@ -139,5 +205,23 @@ export class QuizService {
           : QuizValidateResponseStatus.NEED_MORE_WORK,
       content: badQuestions,
     };
+  }
+
+  private bindSpreadsheetId(dbUser: DbUser): void {
+    if (dbUser.role !== Role.TEACHER)
+      throw new Error(`role of ${dbUser.lineUserId} is not teacher`);
+    if (dbUser.spreadsheetId === undefined)
+      throw new Error(
+        `role of ${dbUser.lineUserId} does not configure spread sheet id`
+      );
+
+    if (bindings.isBound(spreadsheetBindingId) === false)
+      bindings
+        .bind<string>(spreadsheetBindingId)
+        .toConstantValue(dbUser.spreadsheetId);
+    else
+      bindings
+        .rebind<string>(spreadsheetBindingId)
+        .toConstantValue(dbUser.spreadsheetId);
   }
 }

@@ -12,13 +12,16 @@ export class UserService {
   @inject(DbService)
   private readonly dbService!: DbService;
 
-  public async getUserById(creationId: string): Promise<DbUser | null> {
+  public async getUserById(creationId: string): Promise<DbUser> {
     const projectEntity: Entity = process.env.ENTITY as Entity;
 
-    return await this.dbService.getItem<DbUser>({
+    const dbUser = await this.dbService.getItem<DbUser>({
       projectEntity,
       creationId,
     });
+    if (dbUser === null) throw new Error(`user ${creationId} is not found`);
+
+    return dbUser;
   }
 
   public async getAllUsers(): Promise<DbUser[]> {

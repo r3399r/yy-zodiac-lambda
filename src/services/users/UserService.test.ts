@@ -45,8 +45,15 @@ describe('UserService', () => {
   });
 
   it('getUserById should work', async () => {
-    const res: DbUser | null = await userService.getUserById('abc');
+    const res: DbUser = await userService.getUserById('abc');
     expect(res).toStrictEqual(dummyDbUser);
+  });
+
+  it('getUserById should fail', async () => {
+    mockDbService.getItem = jest.fn(() => null);
+    await expect(userService.getUserById('abc')).rejects.toThrow(
+      'user abc is not found'
+    );
   });
 
   it('getUserByLineId should work', async () => {

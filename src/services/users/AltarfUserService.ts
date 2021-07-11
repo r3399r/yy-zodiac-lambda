@@ -1,12 +1,16 @@
 import { inject, injectable } from 'inversify';
-import { bindings } from 'src/bindings';
-import { Role, Student, UpdateUserParams, User } from 'src/model/altarf/User';
-import { DbKey } from 'src/model/DbKey';
+import {
+  DbTeacherStudentPair,
+  Role,
+  UpdateUserParams,
+  User,
+} from 'src/model/altarf/User';
+import { AltarfEntity } from 'src/model/DbKey';
 import { DbUser } from 'src/model/User';
+import { DbService } from 'src/services/DbService';
 import { UserService } from 'src/services/users/UserService';
+import { generateId } from 'src/util/generateId';
 import { Validator } from 'src/Validator';
-
-export const spreadsheetBindingId: symbol = Symbol('spreadsheetId');
 
 /**
  * Service class for Altarf users
@@ -19,24 +23,15 @@ export class AltarfUserService {
   @inject(Validator)
   private readonly validator!: Validator;
 
-  public async bindSpreadsheetId(lineUserId: string): Promise<void> {
-    const user = await this.userService.getUserByLineId(lineUserId);
+  @inject(DbService)
+  private readonly dbService!: DbService;
 
-    if (user.role !== Role.TEACHER)
-      throw new Error(`role of ${lineUserId} is not teacher`);
-    if (user.spreadsheetId === undefined)
-      throw new Error(
-        `role of ${lineUserId} does not configure spread sheet id`
-      );
+  public async getUserById(lineUserId: string): Promise<DbUser> {
+    return await this.userService.getUserById(lineUserId);
+  }
 
-    if (bindings.isBound(spreadsheetBindingId) === false)
-      bindings
-        .bind<string>(spreadsheetBindingId)
-        .toConstantValue(user.spreadsheetId);
-    else
-      bindings
-        .rebind<string>(spreadsheetBindingId)
-        .toConstantValue(user.spreadsheetId);
+  public async getUserByLineId(lineUserId: string): Promise<DbUser> {
+    return await this.userService.getUserByLineId(lineUserId);
   }
 
   public async addUser(user: User): Promise<DbUser> {
@@ -50,7 +45,7 @@ export class AltarfUserService {
   }
 
   public async switchRole(lineUserId: string): Promise<DbUser> {
-    const user = await this.userService.getUserByLineId(lineUserId);
+    const user = await this.getUserByLineId(lineUserId);
 
     return await this.userService.updateUser({
       ...user,
@@ -64,7 +59,7 @@ export class AltarfUserService {
   ): Promise<DbUser> {
     this.validator.validateUpdateUserParams(params);
 
-    const dbUser = await this.userService.getUserByLineId(lineUserId);
+    const dbUser = await this.getUserByLineId(lineUserId);
     if (dbUser.role === Role.STUDENT) {
       if (params.classroom !== undefined)
         throw new Error('role student should not have classroom attribute');
@@ -92,47 +87,43 @@ export class AltarfUserService {
   public async addStudents(
     lineUserId: string,
     studentId: string[]
-  ): Promise<any> {
-    const teacher = await this.userService.getUserByLineId(lineUserId);
+  ): Promise<void> {
+    const teacher = await this.getUserByLineId(lineUserId);
     if (teacher.role !== Role.TEACHER)
       throw new Error(`role of ${lineUserId} is not teacher`);
 
-    const students = await Promise.all(
-      studentId.map(async (lineId: string) => {
-        if (
-          teacher.studentId !== undefined &&
-          teacher.studentId.includes(lineId)
-        )
-          throw new Error(`student ${lineId} already exist`);
+    await Promise.all(
+      studentId.map(async (id: string) => {
+        const user = await this.getUserById(id);
+        if (user.role !== Role.STUDENT)
+          throw new Error(`role of ${id} is not student`);
 
-        const res = await this.userService.getUserByLineId(lineId);
-        if (res.role !== Role.STUDENT)
-          throw new Error(`role of ${lineId} is not student`);
-        if (res.teacherId !== undefined && res.teacherId.includes(lineUserId))
+        const dbTeacherStudentPair = await this.dbService.query<DbTeacherStudentPair>(
+          AltarfEntity.teacherStudentPair,
+          [
+            { key: 'teacherId', value: teacher.creationId },
+            {
+              key: 'studentId',
+              value: id,
+            },
+          ]
+        );
+        if (dbTeacherStudentPair.length > 0)
           throw new Error(
-            `teacher ${lineUserId} already exist in student ${lineId}`
+            `pair of teacher ${teacher.creationId} and student ${id} already exists`
           );
-
-        return res;
       })
     );
 
-    const promiseTeaher = this.userService.updateUser({
-      ...teacher,
-      studentId:
-        teacher.studentId === undefined
-          ? studentId
-          : [...teacher.studentId, ...studentId],
-    });
-    const promiseStudent = students.map(async (student: Student & DbKey) => {
-      return await this.userService.updateUser({
-        ...student,
-        teacherId:
-          student.teacherId === undefined
-            ? [teacher.lineUserId]
-            : [...student.teacherId, teacher.lineUserId],
-      });
-    });
-    await Promise.all([...promiseStudent, promiseTeaher]);
+    await Promise.all(
+      studentId.map(async (id: string) => {
+        await this.dbService.putItem<DbTeacherStudentPair>({
+          projectEntity: AltarfEntity.teacherStudentPair,
+          creationId: generateId(),
+          teacherId: teacher.creationId,
+          studentId: id,
+        });
+      })
+    );
   }
 }

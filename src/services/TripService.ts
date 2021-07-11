@@ -54,11 +54,7 @@ export class TripService {
 
     await Promise.all(
       dbTrip.participants.map(async (participant: string, index: number) => {
-        const dbUser: DbUser | null = await this.userService.getUserById(
-          participant
-        );
-        if (dbUser === null)
-          throw new Error(`user ${participant} is not found`);
+        const dbUser: DbUser = await this.userService.getUserById(participant);
 
         dbTrip.participants[index] = dbUser.name;
       })

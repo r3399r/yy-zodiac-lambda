@@ -68,7 +68,6 @@ describe('SadalsuudUserService', () => {
 
   beforeEach(() => {
     mockUserService = {
-      getUserById: jest.fn(() => dummyDbUser),
       getAllUsers: jest.fn(() => [dummyDbUser]),
       getUserByLineId: jest.fn(() => dummyDbUser),
       addUser: jest.fn(() => dummyDbUser),
@@ -86,11 +85,6 @@ describe('SadalsuudUserService', () => {
     sadalsuudUserService = bindings.get<SadalsuudUserService>(
       SadalsuudUserService
     );
-  });
-
-  it('getUserById should work', async () => {
-    const res: DbUser | null = await sadalsuudUserService.getUserById('abc');
-    expect(res).toStrictEqual(dummyDbUser);
   });
 
   it('getAllUsers should work', async () => {

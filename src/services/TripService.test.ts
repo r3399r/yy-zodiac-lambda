@@ -98,15 +98,6 @@ describe('TripService', () => {
     expect(res).toBeNull();
   });
 
-  it('getTrip should fail if participant does not exists', async () => {
-    mockDbService.getItem = jest.fn(() => dummyDbTrip);
-    mockUserService.getUserById = jest.fn(() => null);
-
-    await expect(tripService.getTrip('abc')).rejects.toThrow(
-      new Error('user abcd is not found')
-    );
-  });
-
   it('addTrip should work', async () => {
     await tripService.addTrip(dummyTrip);
     expect(mockDbService.putItem).toBeCalledTimes(1);

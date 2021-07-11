@@ -7,16 +7,13 @@ import { DbService } from 'src/services/DbService';
 import { LineBotService } from 'src/services/LineBotService';
 import { LineLoginService } from 'src/services/LineLoginService';
 import { MeService } from 'src/services/MeService';
-import { QuizService } from 'src/services/QuizService';
+import { QuizService, spreadsheetBindingId } from 'src/services/QuizService';
 import { SignService } from 'src/services/SignService';
 import { SsmService } from 'src/services/SsmService';
 import { StarService } from 'src/services/StarService';
 import { StockService } from 'src/services/StockService';
 import { TripService } from 'src/services/TripService';
-import {
-  AltarfUserService,
-  spreadsheetBindingId,
-} from 'src/services/users/AltarfUserService';
+import { AltarfUserService } from 'src/services/users/AltarfUserService';
 import { SadalsuudUserService } from 'src/services/users/SadalsuudUserService';
 import { UserService } from 'src/services/users/UserService';
 import { Validator } from 'src/Validator';

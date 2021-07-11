@@ -42,3 +42,8 @@ export type DbQuiz = DbKey & {
 export type SaveQuizParams = {
   label?: string;
 };
+
+export type AssignQuizParams = {
+  studentId: string[];
+  quizId: string;
+};

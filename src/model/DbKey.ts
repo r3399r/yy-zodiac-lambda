@@ -11,6 +11,8 @@ export enum SadalsuudEntity {
 
 export enum AltarfEntity {
   user = 'altarf-user',
+  quiz = 'altarf-quiz',
+  teacherStudentPair = 'altarf-tc-pair',
 }
 
 export interface DbKey {
